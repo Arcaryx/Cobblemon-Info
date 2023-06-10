@@ -2,6 +2,7 @@ package com.arcaryx.cobblemoninfo.jade;
 
 import com.arcaryx.cobblemoninfo.CobblemonInfo;
 import com.arcaryx.cobblemoninfo.config.CommonConfig;
+import com.arcaryx.cobblemoninfo.util.PokemonUtils;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -13,7 +14,9 @@ import snownee.jade.api.IServerDataProvider;
 public enum PokemonEntityProvider implements IServerDataProvider<Entity> {
     INSTANCE;
 
-    public static final String TAG_TRAINER_NAME = "trainer_name";
+    public static final String TAG_TRAINER_NAME = "ci_trainer_name";
+    public static final String TAG_ABILITY_NAME = "ci_ability_name";
+    public static final String TAG_ABILITY_HIDDEN = "ci_ability_hidden";
 
     @Override
     public void appendServerData(CompoundTag data, ServerPlayer player, Level level, Entity entity, boolean b) {
@@ -26,6 +29,12 @@ public enum PokemonEntityProvider implements IServerDataProvider<Entity> {
             if (trainer != null)
                 data.putString(TAG_TRAINER_NAME, trainer.getDisplayName().getString());
         }
+
+        if (CobblemonInfo.COMMON.showPokemonAbility.get() != CommonConfig.ShowType.HIDE) {
+            data.putString(TAG_ABILITY_NAME, pokemon.getAbility().getDisplayName());
+            data.putBoolean(TAG_ABILITY_HIDDEN, PokemonUtils.hasHiddenAbility(pokemon));
+        }
+
     }
 
     @Override

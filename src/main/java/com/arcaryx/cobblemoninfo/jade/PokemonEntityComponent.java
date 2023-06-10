@@ -9,9 +9,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -61,17 +59,25 @@ public enum PokemonEntityComponent implements IEntityComponentProvider {
         }
 
         var showNature = CobblemonInfo.COMMON.showPokemonNature.get();
-        if (showNature == CommonConfig.ShowType.SHOW || (showNature == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching()))
+        if (showNature == CommonConfig.ShowType.SHOW || (showNature == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
+            // TODO: Support minted abilities
             tooltip.add(Component.literal("Nature: ").append(Component.translatable(pokemon.getNature().getDisplayName())));
+        }
 
-
+        var showAbility = !data.contains(PokemonEntityProvider.TAG_ABILITY_HIDDEN) ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonAbility.get();
+        if (showAbility == CommonConfig.ShowType.SHOW || (showAbility == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
+            var abilityComponent = Component.literal("Ability: ").append(Component.translatable(data.getString(PokemonEntityProvider.TAG_ABILITY_NAME)));
+            if (data.contains(PokemonEntityProvider.TAG_ABILITY_HIDDEN) && data.getBoolean(PokemonEntityProvider.TAG_ABILITY_HIDDEN))
+                abilityComponent.append(Component.literal(" (Hidden)"));
+            tooltip.add(abilityComponent);
+        }
 
 
 
         var showDex = pokemon.getForm().getPokedex().size() > 0 ? CobblemonInfo.COMMON.showPokemonDex.get() : CommonConfig.ShowType.HIDE;
         if (showDex == CommonConfig.ShowType.SHOW || (showDex == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
             var dex = pokemon.getForm().getPokedex().stream().findFirst().orElse("");
-            var dexLines = TextUtils.wrapString(I18n.get(dex), 32);
+            var dexLines = TextUtils.wrapString("Pokédex: " + I18n.get(dex), 32);
             for (var line : dexLines)
                 tooltip.add(Component.literal(line));
         }
