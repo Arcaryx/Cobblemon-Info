@@ -60,7 +60,9 @@ public enum PokemonEntityComponent implements IEntityComponentProvider {
             tooltip.add(typesComponent);
         }
 
-
+        var showNature = CobblemonInfo.COMMON.showPokemonNature.get();
+        if (showNature == CommonConfig.ShowType.SHOW || (showNature == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching()))
+            tooltip.add(Component.literal("Nature: ").append(Component.translatable(pokemon.getNature().getDisplayName())));
 
 
 
