@@ -2,12 +2,16 @@ package com.arcaryx.cobblemoninfo.jade;
 
 import com.arcaryx.cobblemoninfo.CobblemonInfo;
 import com.arcaryx.cobblemoninfo.config.CommonConfig;
+import com.arcaryx.cobblemoninfo.util.TextUtils;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Gender;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -30,10 +34,10 @@ public enum PokemonEntityComponent implements IEntityComponentProvider {
         tooltip.clear();
 
         var showGender = pokemon.getGender() == Gender.GENDERLESS ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonGender.get();
-        if (showGender == CommonConfig.ShowType.SHOW || (showGender == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
+        if (showGender == CommonConfig.ShowType.SHOW || (showGender == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching()))
             tooltip.add(Component.literal(pokemon.getGender() == Gender.MALE ? ChatFormatting.BLUE + "\u2642 " :
                     ChatFormatting.LIGHT_PURPLE + "\u2640 ").append(pokemon.getDisplayName().withStyle(ChatFormatting.WHITE)));
-        } else
+        else
             tooltip.add(pokemon.getDisplayName().withStyle(ChatFormatting.WHITE));
 
         var showHealth = CobblemonInfo.COMMON.showPokemonHealth.get();
@@ -47,7 +51,7 @@ public enum PokemonEntityComponent implements IEntityComponentProvider {
         var showTypes = CobblemonInfo.COMMON.showPokemonTypes.get();
         if (showTypes == CommonConfig.ShowType.SHOW || (showTypes == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
             var types = StreamSupport.stream(pokemon.getForm().getTypes().spliterator(), false).toList();
-            var typesComponent = Component.literal(String.format("Type%s: ", types.size() > 1 ? "s" : ""));
+            var typesComponent = Component.literal(TextUtils.basicPluralize("Type", types.size()) + ": ");
             for (var type : types) {
                 if (typesComponent.getSiblings().size() > 0)
                     typesComponent.append(Component.literal(", "));
@@ -61,6 +65,14 @@ public enum PokemonEntityComponent implements IEntityComponentProvider {
 
 
 
+
+        var showDex = pokemon.getForm().getPokedex().size() > 0 ? CobblemonInfo.COMMON.showPokemonDex.get() : CommonConfig.ShowType.HIDE;
+        if (showDex == CommonConfig.ShowType.SHOW || (showDex == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
+            var dex = pokemon.getForm().getPokedex().stream().findFirst().orElse("");
+            var dexLines = TextUtils.wrapString(I18n.get(dex), 32);
+            for (var line : dexLines)
+                tooltip.add(Component.literal(line));
+        }
     }
 
     @Override
