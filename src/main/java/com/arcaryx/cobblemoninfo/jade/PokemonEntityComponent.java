@@ -58,6 +58,10 @@ public enum PokemonEntityComponent implements IEntityComponentProvider {
             tooltip.add(typesComponent);
         }
 
+        var showRewardIvs = CobblemonInfo.COMMON.showPokemonRewardEvs.get();
+        if (showRewardIvs == CommonConfig.ShowType.SHOW || (showRewardIvs == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching()))
+            tooltip.add(Component.literal("EV Yield: ").append(TextUtils.formatEvYield(pokemon.getForm().getEvYield())));
+
         var showNature = CobblemonInfo.COMMON.showPokemonNature.get();
         if (showNature == CommonConfig.ShowType.SHOW || (showNature == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
             // TODO: Support minted abilities
@@ -72,12 +76,22 @@ public enum PokemonEntityComponent implements IEntityComponentProvider {
             tooltip.add(abilityComponent);
         }
 
+        var showIvs = !data.contains(PokemonEntityProvider.TAG_IVS) ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonIvs.get();
+        if (showIvs == CommonConfig.ShowType.SHOW || (showIvs == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
+            var ivs = pokemon.getIvs().loadFromNBT(data.getCompound(PokemonEntityProvider.TAG_IVS));
+            tooltip.add(Component.literal("IVs: " + TextUtils.formatStats(ivs, 31 * 6)));
+        }
 
+        var showEvs =  !data.contains(PokemonEntityProvider.TAG_EVS) ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonEvs.get();
+        if (showEvs == CommonConfig.ShowType.SHOW || (showEvs == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
+            var evs = pokemon.getEvs().loadFromNBT(data.getCompound(PokemonEntityProvider.TAG_EVS));
+            tooltip.add(Component.literal("EVs: " + TextUtils.formatStats(evs, 510)));
+        }
 
-        var showDex = pokemon.getForm().getPokedex().size() > 0 ? CobblemonInfo.COMMON.showPokemonDex.get() : CommonConfig.ShowType.HIDE;
+        var showDex = pokemon.getForm().getPokedex().size() > 0 ? CobblemonInfo.COMMON.showPokemonDexEntry.get() : CommonConfig.ShowType.HIDE;
         if (showDex == CommonConfig.ShowType.SHOW || (showDex == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
             var dex = pokemon.getForm().getPokedex().stream().findFirst().orElse("");
-            var dexLines = TextUtils.wrapString("Pokédex: " + I18n.get(dex), 32);
+            var dexLines = TextUtils.wrapString("Dex Entry: " + I18n.get(dex), 32);
             for (var line : dexLines)
                 tooltip.add(Component.literal(line));
         }

@@ -17,6 +17,8 @@ public enum PokemonEntityProvider implements IServerDataProvider<Entity> {
     public static final String TAG_TRAINER_NAME = "ci_trainer_name";
     public static final String TAG_ABILITY_NAME = "ci_ability_name";
     public static final String TAG_ABILITY_HIDDEN = "ci_ability_hidden";
+    public static final String TAG_IVS = "ci_ivs";
+    public static final String TAG_EVS = "ci_evs";
 
     @Override
     public void appendServerData(CompoundTag data, ServerPlayer player, Level level, Entity entity, boolean b) {
@@ -34,6 +36,13 @@ public enum PokemonEntityProvider implements IServerDataProvider<Entity> {
             data.putString(TAG_ABILITY_NAME, pokemon.getAbility().getDisplayName());
             data.putBoolean(TAG_ABILITY_HIDDEN, PokemonUtils.hasHiddenAbility(pokemon));
         }
+
+        if (CobblemonInfo.COMMON.showPokemonIvs.get() != CommonConfig.ShowType.HIDE)
+            data.put(TAG_IVS, pokemon.getIvs().saveToNBT(new CompoundTag()));
+
+        if (CobblemonInfo.COMMON.showPokemonEvs.get() != CommonConfig.ShowType.HIDE)
+            data.put(TAG_EVS, pokemon.getEvs().saveToNBT(new CompoundTag()));
+
 
     }
 

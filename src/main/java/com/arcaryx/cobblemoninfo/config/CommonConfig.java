@@ -13,7 +13,7 @@ public class CommonConfig {
 
     public final ForgeConfigSpec.BooleanValue removePokemonTooltip;
     public final ForgeConfigSpec.EnumValue<ShowType> showPokemonGender, showPokemonHealth, showPokemonTrainer,
-            showPokemonTypes, showPokemonNature, showPokemonAbility, showPokemonDex;
+            showPokemonTypes, showPokemonRewardEvs, showPokemonNature, showPokemonAbility, showPokemonIvs, showPokemonEvs, showPokemonDexEntry;
 
 
     public CommonConfig(ForgeConfigSpec.Builder builder){
@@ -26,10 +26,12 @@ public class CommonConfig {
         showPokemonHealth = builder.defineEnum("showPokemonHealth", ShowType.SHOW);
         showPokemonTrainer = builder.defineEnum("showPokemonTrainer", ShowType.SHOW);
         showPokemonTypes = builder.defineEnum("showPokemonTypes", ShowType.SHOW);
+        showPokemonRewardEvs = builder.defineEnum("showPokemonRewardEvs", ShowType.SHOW);
         showPokemonNature = builder.defineEnum("showPokemonNature", ShowType.SHOW);
         showPokemonAbility = builder.defineEnum("showPokemonAbility", ShowType.SHOW);
-
-        showPokemonDex =  builder.defineEnum("showPokemonDex", ShowType.SNEAK);
+        showPokemonIvs = builder.defineEnum("showPokemonIvs", ShowType.SHOW);
+        showPokemonEvs = builder.defineEnum("showPokemonEvs", ShowType.SHOW);
+        showPokemonDexEntry =  builder.defineEnum("showPokemonDexEntry", ShowType.SNEAK);
         builder.pop().pop();
     }
 }
