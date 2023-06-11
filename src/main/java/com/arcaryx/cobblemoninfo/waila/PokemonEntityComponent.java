@@ -2,6 +2,7 @@ package com.arcaryx.cobblemoninfo.waila;
 
 import com.arcaryx.cobblemoninfo.CobblemonInfo;
 import com.arcaryx.cobblemoninfo.config.CommonConfig;
+import com.arcaryx.cobblemoninfo.util.PokemonUtils;
 import com.arcaryx.cobblemoninfo.util.TextUtils;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Gender;
@@ -31,9 +32,13 @@ public enum PokemonEntityComponent implements IEntityComponentProvider {
         var health = tooltip.get(1, IElement.Align.LEFT);
         tooltip.clear();
 
-        var showGender = pokemon.getGender() == Gender.GENDERLESS ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonGender.get();
+
+        var showGender = data.contains(PokemonEntityProvider.TAG_GENDER) ? CobblemonInfo.COMMON.showPokemonGender.get() : CommonConfig.ShowType.HIDE;
+        var gender = PokemonUtils.getGenderFromShowdownName(data.getString(PokemonEntityProvider.TAG_GENDER));
+        if (gender == Gender.GENDERLESS)
+            showGender = CommonConfig.ShowType.HIDE;
         if (showGender == CommonConfig.ShowType.SHOW || (showGender == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching()))
-            tooltip.add(Component.literal(pokemon.getGender() == Gender.MALE ? ChatFormatting.BLUE + "\u2642 " :
+            tooltip.add(Component.literal(gender == Gender.MALE ? ChatFormatting.BLUE + "\u2642 " :
                     ChatFormatting.LIGHT_PURPLE + "\u2640 ").append(pokemon.getDisplayName().withStyle(ChatFormatting.WHITE)));
         else
             tooltip.add(pokemon.getDisplayName().withStyle(ChatFormatting.WHITE));
@@ -62,10 +67,10 @@ public enum PokemonEntityComponent implements IEntityComponentProvider {
         if (showRewardIvs == CommonConfig.ShowType.SHOW || (showRewardIvs == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching()))
             tooltip.add(Component.literal("EV Yield: ").append(TextUtils.formatEvYield(pokemon.getForm().getEvYield())));
 
-        var showNature = CobblemonInfo.COMMON.showPokemonNature.get();
+        var showNature = !data.contains(PokemonEntityProvider.TAG_NATURE_NAME) ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonNature.get();
         if (showNature == CommonConfig.ShowType.SHOW || (showNature == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
             // TODO: Support minted abilities
-            tooltip.add(Component.literal("Nature: ").append(Component.translatable(pokemon.getNature().getDisplayName())));
+            tooltip.add(Component.literal("Nature: ").append(Component.translatable(data.getString(PokemonEntityProvider.TAG_NATURE_NAME))));
         }
 
         var showAbility = !data.contains(PokemonEntityProvider.TAG_ABILITY_HIDDEN) ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonAbility.get();
