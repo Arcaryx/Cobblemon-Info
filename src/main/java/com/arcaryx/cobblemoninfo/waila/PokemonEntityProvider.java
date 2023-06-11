@@ -1,4 +1,4 @@
-package com.arcaryx.cobblemoninfo.jade;
+package com.arcaryx.cobblemoninfo.waila;
 
 import com.arcaryx.cobblemoninfo.CobblemonInfo;
 import com.arcaryx.cobblemoninfo.config.CommonConfig;
@@ -48,6 +48,6 @@ public enum PokemonEntityProvider implements IServerDataProvider<Entity> {
 
     @Override
     public ResourceLocation getUid() {
-        return CobblemonPlugin.POKEMON_ENTITY_PROVIDER;
+        return CobblemonWailaPlugin.POKEMON_ENTITY_PROVIDER;
     }
 }

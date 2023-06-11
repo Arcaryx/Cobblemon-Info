@@ -1,4 +1,4 @@
-package com.arcaryx.cobblemoninfo.jade;
+package com.arcaryx.cobblemoninfo.waila;
 
 import com.arcaryx.cobblemoninfo.CobblemonInfo;
 import com.cobblemon.mod.common.CobblemonEntities;
@@ -9,8 +9,8 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;
 
-@WailaPlugin(CobblemonPlugin.ID)
-public class CobblemonPlugin implements IWailaPlugin {
+@WailaPlugin(CobblemonWailaPlugin.ID)
+public class CobblemonWailaPlugin implements IWailaPlugin {
     public static final String ID = "cobblemon";
     public static final ResourceLocation POKEMON_ENTITY_PROVIDER = new ResourceLocation(ID, "pokemon_entity_provider");
     public static final ResourceLocation POKEMON_ENTITY_COMPONENT = new ResourceLocation(ID, "pokemon_entity_component");

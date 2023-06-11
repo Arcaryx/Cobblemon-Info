@@ -113,6 +113,7 @@ dependencies {
     implementation fg.deobf("curse.maven:architectury-419699:${architectury_file}")
     implementation fg.deobf("curse.maven:kotlin-351264:${kotlin_file}")
     implementation fg.deobf("curse.maven:jei-238222:${jei_file}")
+    implementation fg.deobf("curse.maven:jer-240630:${jer_file}")
 	implementation fg.deobf("curse.maven:jade-324717:${jade_file}")
     implementation group: 'org.spongepowered', name: 'mixin', version: "${mixin_version}"
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
