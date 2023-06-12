@@ -1,5 +1,7 @@
 package com.arcaryx.cobblemoninfo.waila;
 
+import com.arcaryx.cobblemoninfo.CobblemonInfo;
+import com.arcaryx.cobblemoninfo.config.CommonConfig;
 import com.cobblemon.mod.common.block.entity.HealingMachineBlockEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -16,6 +18,9 @@ public enum HealerProvider implements IBlockComponentProvider {
 
     @Override
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
+        var showHealer = CobblemonInfo.COMMON.showHealerEnergy.get();
+        if (showHealer != CommonConfig.ShowType.SHOW && (showHealer == CommonConfig.ShowType.SNEAK && !accessor.getPlayer().isCrouching()))
+            return;
         if (!(accessor.getBlockEntity() instanceof HealingMachineBlockEntity healer))
             return;
         var current = healer.getHealingCharge();

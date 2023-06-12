@@ -1,6 +1,7 @@
 package com.arcaryx.cobblemoninfo.waila;
 
 import com.arcaryx.cobblemoninfo.CobblemonInfo;
+import com.arcaryx.cobblemoninfo.config.CommonConfig;
 import com.cobblemon.mod.common.CobblemonEntities;
 import com.cobblemon.mod.common.block.HealingMachineBlock;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
@@ -25,7 +26,7 @@ public class CobblemonWailaPlugin implements IWailaPlugin {
     public void registerClient(IWailaClientRegistration registration) {
         if (CobblemonInfo.COMMON.modifyPokemonTooltip.get())
             registration.registerEntityComponent(PokemonProvider.INSTANCE, PokemonEntity.class);
-        if (CobblemonInfo.COMMON.showHealerEnergy.get())
+        if (CobblemonInfo.COMMON.showHealerEnergy.get() != CommonConfig.ShowType.HIDE)
             registration.registerBlockComponent(HealerProvider.INSTANCE,  HealingMachineBlock.class);
     }
 }
