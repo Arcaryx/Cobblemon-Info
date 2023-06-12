@@ -4,6 +4,8 @@ import com.arcaryx.cobblemoninfo.CobblemonInfo;
 import com.arcaryx.cobblemoninfo.config.CommonConfig;
 import com.arcaryx.cobblemoninfo.util.PokemonUtils;
 import com.arcaryx.cobblemoninfo.util.TextUtils;
+import com.cobblemon.mod.common.api.pokemon.stats.Stat;
+import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Gender;
 import net.minecraft.ChatFormatting;
@@ -23,6 +25,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.impl.ui.HealthElement;
 
+import java.util.Arrays;
 import java.util.stream.StreamSupport;
 
 public enum PokemonProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
@@ -33,6 +36,7 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
     public static final String TAG_NATURE_NAME = "ci_nature_name";
     public static final String TAG_ABILITY_NAME = "ci_ability_name";
     public static final String TAG_ABILITY_HIDDEN = "ci_ability_hidden";
+    public static final String TAG_EV_YIELD = "ci_yield";
     public static final String TAG_IVS = "ci_ivs";
     public static final String TAG_EVS = "ci_evs";
 
@@ -52,6 +56,12 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
             if (trainer != null)
                 data.putString(TAG_TRAINER_NAME, trainer.getDisplayName().getString());
         }
+
+        if (CobblemonInfo.COMMON.showPokemonRewardEvs.get() != CommonConfig.ShowType.HIDE) {
+            data.put(TAG_EV_YIELD, PokemonUtils.saveStatMapToCompoundTag(pokemon.getForm().getEvYield()));
+        }
+
+
 
         if (CobblemonInfo.COMMON.showPokemonNature.get() != CommonConfig.ShowType.HIDE)
             data.putString(TAG_NATURE_NAME, pokemon.getNature().getDisplayName());
@@ -109,9 +119,10 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
             tooltip.add(typesComponent);
         }
 
-        var showRewardIvs = CobblemonInfo.COMMON.showPokemonRewardEvs.get();
+        var showRewardIvs = data.contains(TAG_EV_YIELD) ? CobblemonInfo.COMMON.showPokemonRewardEvs.get() : CommonConfig.ShowType.HIDE;
         if (showRewardIvs == CommonConfig.ShowType.SHOW || (showRewardIvs == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching()))
-            tooltip.add(Component.literal("EV Yield: ").append(TextUtils.formatEvYield(pokemon.getForm().getEvYield())));
+            tooltip.add(Component.literal("EV Yield: ")
+                    .append(TextUtils.formatEvYield(PokemonUtils.loadStatMapFromCompoundTag(data.getCompound(TAG_EV_YIELD)))));
 
         var showNature = !data.contains(TAG_NATURE_NAME) ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonNature.get();
         if (showNature == CommonConfig.ShowType.SHOW || (showNature == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
