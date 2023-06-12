@@ -42,7 +42,7 @@ public abstract class MixinJEIConfig {
                 accessor.setIsClient(true);
                 pokemon.setSpecies(species);
                 return new PokemonEntity(CompatBase.getLevel(), pokemon, CobblemonEntities.POKEMON.get());
-            }, LightLevel.any, 0, lootDrops);
+            }, LightLevel.any, lootDrops);
             MobRegistry.getInstance().registerMob(entry);
         }
     }
