@@ -11,16 +11,19 @@ public class CommonConfig {
         SHOW
     }
 
-    public final ForgeConfigSpec.BooleanValue removePokemonTooltip;
+    public final ForgeConfigSpec.BooleanValue showHealerEnergy, modifyPokemonTooltip;
     public final ForgeConfigSpec.EnumValue<ShowType> showPokemonGender, showPokemonHealth, showPokemonTrainer,
             showPokemonTypes, showPokemonRewardEvs, showPokemonNature, showPokemonAbility, showPokemonIvs, showPokemonEvs, showPokemonDexEntry;
 
 
     public CommonConfig(ForgeConfigSpec.Builder builder){
         builder.push("jade");
-        removePokemonTooltip = builder
-                .comment("Remove the Pokemon tooltip be completely.")
-                .define("removePokemonTooltip", false);
+        showHealerEnergy = builder
+                .comment("Show the energy for the healer.")
+                .define("showHealerEnergy", true);
+        modifyPokemonTooltip = builder
+                .comment("Modify the Pokemon tooltip.")
+                .define("modifyPokemonTooltip", true);
         builder.push("pokemon");
         showPokemonGender = builder.defineEnum("showPokemonGender", ShowType.SHOW);
         showPokemonHealth = builder.defineEnum("showPokemonHealth", ShowType.SHOW);

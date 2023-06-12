@@ -9,32 +9,78 @@ import com.cobblemon.mod.common.pokemon.Gender;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
+import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
-import snownee.jade.api.ui.IElement;
+import snownee.jade.impl.ui.HealthElement;
 
 import java.util.stream.StreamSupport;
 
-public enum PokemonEntityComponent implements IEntityComponentProvider {
+public enum PokemonProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
     INSTANCE;
+
+    public static final String TAG_GENDER = "ci_gender";
+    public static final String TAG_TRAINER_NAME = "ci_trainer_name";
+    public static final String TAG_NATURE_NAME = "ci_nature_name";
+    public static final String TAG_ABILITY_NAME = "ci_ability_name";
+    public static final String TAG_ABILITY_HIDDEN = "ci_ability_hidden";
+    public static final String TAG_IVS = "ci_ivs";
+    public static final String TAG_EVS = "ci_evs";
+
+    @Override
+    public void appendServerData(CompoundTag data, ServerPlayer player, Level level, Entity entity, boolean b) {
+        if (!(entity instanceof PokemonEntity pokemonEntity))
+            return;
+
+        var pokemon = pokemonEntity.getPokemon();
+
+        if (CobblemonInfo.COMMON.showPokemonGender.get() != CommonConfig.ShowType.HIDE)
+            data.putString(TAG_GENDER, pokemon.getGender().getShowdownName());
+
+        if (CobblemonInfo.COMMON.showPokemonTrainer.get() != CommonConfig.ShowType.HIDE && pokemon.getOwnerUUID() != null) {
+            var trainer = level.getPlayerByUUID(pokemon.getOwnerUUID());
+            // TODO: Handle offline players when cobblemon adds ranch blocks
+            if (trainer != null)
+                data.putString(TAG_TRAINER_NAME, trainer.getDisplayName().getString());
+        }
+
+        if (CobblemonInfo.COMMON.showPokemonNature.get() != CommonConfig.ShowType.HIDE)
+            data.putString(TAG_NATURE_NAME, pokemon.getNature().getDisplayName());
+
+        if (CobblemonInfo.COMMON.showPokemonAbility.get() != CommonConfig.ShowType.HIDE) {
+            data.putString(TAG_ABILITY_NAME, pokemon.getAbility().getDisplayName());
+            data.putBoolean(TAG_ABILITY_HIDDEN, PokemonUtils.hasHiddenAbility(pokemon));
+        }
+
+        if (CobblemonInfo.COMMON.showPokemonIvs.get() != CommonConfig.ShowType.HIDE)
+            data.put(TAG_IVS, pokemon.getIvs().saveToNBT(new CompoundTag()));
+
+        if (CobblemonInfo.COMMON.showPokemonEvs.get() != CommonConfig.ShowType.HIDE)
+            data.put(TAG_EVS, pokemon.getEvs().saveToNBT(new CompoundTag()));
+
+
+    }
 
     @Override
     public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-        if (!(accessor.getEntity() instanceof PokemonEntity pokemonEntity) || Minecraft.getInstance().level == null)
+        if (!(accessor.getEntity() instanceof PokemonEntity pokemonEntity))
             return;
         var pokemon = pokemonEntity.getPokemon();
         var data = accessor.getServerData();
-        var health = tooltip.get(1, IElement.Align.LEFT);
         tooltip.clear();
 
 
-        var showGender = data.contains(PokemonEntityProvider.TAG_GENDER) ? CobblemonInfo.COMMON.showPokemonGender.get() : CommonConfig.ShowType.HIDE;
-        var gender = PokemonUtils.getGenderFromShowdownName(data.getString(PokemonEntityProvider.TAG_GENDER));
+        var showGender = data.contains(TAG_GENDER) ? CobblemonInfo.COMMON.showPokemonGender.get() : CommonConfig.ShowType.HIDE;
+        var gender = PokemonUtils.getGenderFromShowdownName(data.getString(TAG_GENDER));
         if (gender == Gender.GENDERLESS)
             showGender = CommonConfig.ShowType.HIDE;
         if (showGender == CommonConfig.ShowType.SHOW || (showGender == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching()))
@@ -45,11 +91,11 @@ public enum PokemonEntityComponent implements IEntityComponentProvider {
 
         var showHealth = CobblemonInfo.COMMON.showPokemonHealth.get();
         if (showHealth == CommonConfig.ShowType.SHOW || (showHealth == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching()))
-            tooltip.add(health);
+            tooltip.add(new HealthElement(pokemonEntity.getMaxHealth(), pokemonEntity.getHealth()));
 
-        var showTrainer = data.contains(PokemonEntityProvider.TAG_TRAINER_NAME) ? CobblemonInfo.COMMON.showPokemonTrainer.get() : CommonConfig.ShowType.HIDE;
+        var showTrainer = data.contains(TAG_TRAINER_NAME) ? CobblemonInfo.COMMON.showPokemonTrainer.get() : CommonConfig.ShowType.HIDE;
         if (showTrainer == CommonConfig.ShowType.SHOW || (showTrainer == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching()))
-            tooltip.add(Component.literal("Trainer: ").append(data.getString(PokemonEntityProvider.TAG_TRAINER_NAME)));
+            tooltip.add(Component.literal("Trainer: ").append(data.getString(TAG_TRAINER_NAME)));
 
         var showTypes = CobblemonInfo.COMMON.showPokemonTypes.get();
         if (showTypes == CommonConfig.ShowType.SHOW || (showTypes == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
@@ -67,29 +113,29 @@ public enum PokemonEntityComponent implements IEntityComponentProvider {
         if (showRewardIvs == CommonConfig.ShowType.SHOW || (showRewardIvs == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching()))
             tooltip.add(Component.literal("EV Yield: ").append(TextUtils.formatEvYield(pokemon.getForm().getEvYield())));
 
-        var showNature = !data.contains(PokemonEntityProvider.TAG_NATURE_NAME) ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonNature.get();
+        var showNature = !data.contains(TAG_NATURE_NAME) ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonNature.get();
         if (showNature == CommonConfig.ShowType.SHOW || (showNature == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
             // TODO: Support minted abilities
-            tooltip.add(Component.literal("Nature: ").append(Component.translatable(data.getString(PokemonEntityProvider.TAG_NATURE_NAME))));
+            tooltip.add(Component.literal("Nature: ").append(Component.translatable(data.getString(TAG_NATURE_NAME))));
         }
 
-        var showAbility = !data.contains(PokemonEntityProvider.TAG_ABILITY_HIDDEN) ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonAbility.get();
+        var showAbility = !data.contains(TAG_ABILITY_HIDDEN) ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonAbility.get();
         if (showAbility == CommonConfig.ShowType.SHOW || (showAbility == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
-            var abilityComponent = Component.literal("Ability: ").append(Component.translatable(data.getString(PokemonEntityProvider.TAG_ABILITY_NAME)));
-            if (data.contains(PokemonEntityProvider.TAG_ABILITY_HIDDEN) && data.getBoolean(PokemonEntityProvider.TAG_ABILITY_HIDDEN))
+            var abilityComponent = Component.literal("Ability: ").append(Component.translatable(data.getString(TAG_ABILITY_NAME)));
+            if (data.contains(TAG_ABILITY_HIDDEN) && data.getBoolean(TAG_ABILITY_HIDDEN))
                 abilityComponent.append(Component.literal(" (Hidden)"));
             tooltip.add(abilityComponent);
         }
 
-        var showIvs = !data.contains(PokemonEntityProvider.TAG_IVS) ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonIvs.get();
+        var showIvs = !data.contains(TAG_IVS) ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonIvs.get();
         if (showIvs == CommonConfig.ShowType.SHOW || (showIvs == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
-            var ivs = pokemon.getIvs().loadFromNBT(data.getCompound(PokemonEntityProvider.TAG_IVS));
+            var ivs = pokemon.getIvs().loadFromNBT(data.getCompound(TAG_IVS));
             tooltip.add(Component.literal("IVs: " + TextUtils.formatStats(ivs, 31 * 6)));
         }
 
-        var showEvs =  !data.contains(PokemonEntityProvider.TAG_EVS) ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonEvs.get();
+        var showEvs =  !data.contains(TAG_EVS) ? CommonConfig.ShowType.HIDE : CobblemonInfo.COMMON.showPokemonEvs.get();
         if (showEvs == CommonConfig.ShowType.SHOW || (showEvs == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
-            var evs = pokemon.getEvs().loadFromNBT(data.getCompound(PokemonEntityProvider.TAG_EVS));
+            var evs = pokemon.getEvs().loadFromNBT(data.getCompound(TAG_EVS));
             tooltip.add(Component.literal("EVs: " + TextUtils.formatStats(evs, 510)));
         }
 
@@ -104,6 +150,6 @@ public enum PokemonEntityComponent implements IEntityComponentProvider {
 
     @Override
     public ResourceLocation getUid() {
-        return CobblemonWailaPlugin.POKEMON_ENTITY_COMPONENT;
+        return CobblemonWailaPlugin.POKEMON_ENTITY;
     }
 }

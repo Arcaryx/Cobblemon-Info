@@ -1,4 +1,4 @@
 {
-  "config.jade.plugin_cobblemon.pokemon_entity_provider": "Pokemon Provider",
-  "config.jade.plugin_cobblemon.pokemon_entity_component": "Pokemon Component"
+  "config.jade.plugin_cobblemon.pokemon_entity": "Pokemon Entity",
+  "config.jade.plugin_cobblemon.healer": "Healer"
 }
