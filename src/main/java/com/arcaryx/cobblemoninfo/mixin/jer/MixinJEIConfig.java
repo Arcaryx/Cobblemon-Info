@@ -1,16 +1,17 @@
 package com.arcaryx.cobblemoninfo.mixin.jer;
 
+import com.arcaryx.cobblemoninfo.CobblemonInfo;
 import com.arcaryx.cobblemoninfo.data.ClientCache;
-import com.cobblemon.mod.common.api.drop.ItemDropEntry;
-import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
+import com.cobblemon.mod.common.CobblemonEntities;
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies;
+import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import com.cobblemon.mod.common.pokemon.Pokemon;
 import jeresources.api.conditionals.LightLevel;
 import jeresources.api.drop.LootDrop;
 import jeresources.compatibility.CompatBase;
 import jeresources.entry.MobEntry;
 import jeresources.jei.JEIConfig;
 import jeresources.registry.MobRegistry;
-import kotlin.ranges.IntRange;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,10 +37,17 @@ public abstract class MixinJEIConfig {
             }
 
             var entry = MobEntry.create(() -> {
-                // TODO: Figure out how to set the pose (not t-posing)
-                var properties = new PokemonProperties();
-                properties.setSpecies(species.getName());
-                return properties.createEntity(CompatBase.getLevel());
+                var pokemon = new Pokemon();
+                // TODO: Accessor Mixin instead?
+                try {
+                    var internalClientField = pokemon.getClass().getDeclaredField("isClient");
+                    internalClientField.setAccessible(true);
+                    internalClientField.set(pokemon, true);
+                    pokemon.setSpecies(species);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    CobblemonInfo.LOGGER.error(e);
+                }
+                return new PokemonEntity(CompatBase.getLevel(), pokemon, CobblemonEntities.POKEMON.get());
             }, LightLevel.any, 0, lootDrops);
             MobRegistry.getInstance().registerMob(entry);
         }
