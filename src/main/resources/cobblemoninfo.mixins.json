@@ -6,6 +6,7 @@
   "refmap": "cobblemoninfo.refmap.json",
   "mixins": [],
   "client": [
+    "cobblemon.PokemonAccessor",
     "jer.MixinJEIConfig"
   ]
 }

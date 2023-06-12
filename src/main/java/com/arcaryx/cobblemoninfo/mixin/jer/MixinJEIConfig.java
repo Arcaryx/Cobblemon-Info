@@ -1,7 +1,7 @@
 package com.arcaryx.cobblemoninfo.mixin.jer;
 
-import com.arcaryx.cobblemoninfo.CobblemonInfo;
 import com.arcaryx.cobblemoninfo.data.ClientCache;
+import com.arcaryx.cobblemoninfo.mixin.cobblemon.PokemonAccessor;
 import com.cobblemon.mod.common.CobblemonEntities;
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
@@ -19,9 +19,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(JEIConfig.class)
+@Mixin(value = JEIConfig.class, remap = false)
 public abstract class MixinJEIConfig {
-    @Inject(method = "registerRecipes(Lmezz/jei/api/registration/IRecipeRegistration;)V",at=@At(value="HEAD"), remap = false, require = 0)
+    @Inject(method = "registerRecipes(Lmezz/jei/api/registration/IRecipeRegistration;)V",at=@At(value="HEAD"), require = 0)
     private void registerRecipes(IRecipeRegistration registration, CallbackInfo ci) {
         var pokemonSpecies = PokemonSpecies.INSTANCE.getSpecies();
         for (var species : pokemonSpecies) {
@@ -38,15 +38,9 @@ public abstract class MixinJEIConfig {
 
             var entry = MobEntry.create(() -> {
                 var pokemon = new Pokemon();
-                // TODO: Accessor Mixin instead?
-                try {
-                    var internalClientField = pokemon.getClass().getDeclaredField("isClient");
-                    internalClientField.setAccessible(true);
-                    internalClientField.set(pokemon, true);
-                    pokemon.setSpecies(species);
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    CobblemonInfo.LOGGER.error(e);
-                }
+                var accessor = (PokemonAccessor)pokemon;
+                accessor.setIsClient(true);
+                pokemon.setSpecies(species);
                 return new PokemonEntity(CompatBase.getLevel(), pokemon, CobblemonEntities.POKEMON.get());
             }, LightLevel.any, 0, lootDrops);
             MobRegistry.getInstance().registerMob(entry);
