@@ -1,5 +1,6 @@
 package com.arcaryx.cobblemoninfo.mixin.jer;
 
+import com.arcaryx.cobblemoninfo.data.ClientCache;
 import com.cobblemon.mod.common.api.drop.ItemDropEntry;
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies;
@@ -23,19 +24,14 @@ public abstract class MixinJEIConfig {
     private void registerRecipes(IRecipeRegistration registration, CallbackInfo ci) {
         var pokemonSpecies = PokemonSpecies.INSTANCE.getSpecies();
         for (var species : pokemonSpecies) {
-            var drops = species.getDrops().getEntries();
+            var drops = ClientCache.getPokemonDrops(species);
             var lootDrops = new LootDrop[drops.size()];
             for (var i = 0; i < lootDrops.length; i++) {
                 var drop = drops.get(i);
-                if (drop instanceof ItemDropEntry itemDrop) {
-                    var item = ForgeRegistries.ITEMS.getValue(itemDrop.getItem());
-                    if (item != null) {
-                        var range = itemDrop.getQuantityRange();
-                        if (range == null)
-                            range = new IntRange(itemDrop.getQuantity(), itemDrop.getQuantity());
-                        var chance = itemDrop.getPercentage() / 100;
-                        lootDrops[i] = new LootDrop(item.getDefaultInstance(), range.getFirst(), range.getLast(), chance);
-                    }
+                var item = ForgeRegistries.ITEMS.getValue(drop.getItem());
+                if (item != null) {
+                    var range = drop.getRange();
+                    lootDrops[i] = new LootDrop(item.getDefaultInstance(), range.getFirst(), range.getLast(), drop.getChance());
                 }
             }
 

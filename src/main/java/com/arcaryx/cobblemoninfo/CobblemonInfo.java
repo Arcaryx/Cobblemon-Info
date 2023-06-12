@@ -1,6 +1,7 @@
 package com.arcaryx.cobblemoninfo;
 
 import com.arcaryx.cobblemoninfo.config.CommonConfig;
+import com.arcaryx.cobblemoninfo.net.NetworkHandler;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -27,5 +28,6 @@ public class CobblemonInfo {
         INSTANCE = this;
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, commonSpec);
+        NetworkHandler.register();
     }
 }
