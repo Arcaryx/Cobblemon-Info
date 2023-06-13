@@ -1,22 +1,32 @@
 package com.arcaryx.cobblemoninfo;
 
+import com.arcaryx.cobblemoninfo.event.EventHandler;
+import com.arcaryx.cobblemoninfo.net.NetworkHandler;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CobblemonInfo implements ModInitializer {
-	// This logger is used to write text to the console and the log file.
-	// It is considered best practice to use your mod id as the logger's name.
-	// That way, it's clear which mod wrote info, warnings, and errors.
-    public static final Logger LOGGER = LoggerFactory.getLogger("cobblemoninfo");
+	public static final String MOD_ID = "cobblemoninfo";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static CobblemonInfo INSTANCE;
+
+	public CobblemonInfo() {
+		INSTANCE = this;
+	}
 
 	@Override
 	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
-
-		LOGGER.info("Hello Fabric world!");
+		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
+			NetworkHandler.registerClient();
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+			ServerPlayer player = handler.player;
+			EventHandler.onDatapackSync(player);
+		});
 	}
 }

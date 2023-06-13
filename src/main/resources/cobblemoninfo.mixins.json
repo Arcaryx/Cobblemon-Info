@@ -3,6 +3,10 @@
 	"package": "com.arcaryx.cobblemoninfo.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [],
+	"client": [
+		"cobblemon.PokemonAccessor",
+		"jer.MixinJEIConfig"
+	],
 	"injectors": {
 		"defaultRequire": 1
 	}
