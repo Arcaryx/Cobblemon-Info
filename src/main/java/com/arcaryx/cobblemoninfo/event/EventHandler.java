@@ -1,5 +1,6 @@
 package com.arcaryx.cobblemoninfo.event;
 
+import com.arcaryx.cobblemoninfo.CobblemonInfo;
 import com.arcaryx.cobblemoninfo.data.PokemonDrop;
 import com.arcaryx.cobblemoninfo.net.NetworkHandler;
 import com.arcaryx.cobblemoninfo.net.message.PokemonDropMessage;
@@ -12,7 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventHandler {
-    public static void onDatapackSync(ServerPlayer player) {
+    public static void onPlayerJoin(ServerPlayer player) {
+        NetworkHandler.sendConfigToPlayer(player, CobblemonInfo.config);
+
         List<PokemonDrop> lootDrops = new ArrayList<>();
         var pokemonSpecies = PokemonSpecies.INSTANCE.getSpecies();
         for (var species : pokemonSpecies) {
@@ -27,6 +30,6 @@ public class EventHandler {
                 }
             }
         }
-        NetworkHandler.sendToPlayer(player, new PokemonDropMessage(lootDrops));
+        NetworkHandler.sendDropsToPlayer(player, new PokemonDropMessage(lootDrops));
     }
 }

@@ -11,6 +11,9 @@
 	"entrypoints": {
 		"main": [
           "${mod_base_package}.CobblemonInfo"
+		],
+		"jade": [
+			"${mod_base_package}.waila.CobblemonWailaPlugin"
 		]
 	},
 	"mixins": [
