@@ -5,7 +5,8 @@
 	"mixins": [],
 	"client": [
 		"cobblemon.PokemonAccessor",
-		"jer.MixinJEIConfig"
+		"jer.MixinJEIConfig",
+		"jer.MixinModInfo"
 	],
 	"injectors": {
 		"defaultRequire": 1
