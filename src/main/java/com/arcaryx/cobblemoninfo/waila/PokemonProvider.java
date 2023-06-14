@@ -22,6 +22,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.impl.ui.HealthElement;
 
+import java.util.HashSet;
 import java.util.stream.StreamSupport;
 
 public enum PokemonProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
@@ -81,6 +82,8 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         if (!(accessor.getEntity() instanceof PokemonEntity pokemonEntity))
             return;
         var pokemon = pokemonEntity.getPokemon();
+        pokemon.setAspects(pokemonEntity.getAspects().get());
+        pokemon.updateForm();
         var data = accessor.getServerData();
         tooltip.clear();
 
