@@ -9,9 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 public class ClientCache {
-    private static Map<Species, List<PokemonDrop>> pokemonDrops = new HashMap<>();
+    private static final Map<Species, List<PokemonDrop>> pokemonDrops = new HashMap<>();
 
     public static void setPokemonDrops(List<PokemonDrop> drops) {
+        pokemonDrops.clear();
         for (var drop : drops) {
             var species = PokemonSpecies.INSTANCE.getByIdentifier(drop.getSpecies());
             if (species == null)
