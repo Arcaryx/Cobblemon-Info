@@ -85,6 +85,8 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         if (!(accessor.getEntity() instanceof PokemonEntity pokemonEntity))
             return;
         var pokemon = pokemonEntity.getPokemon();
+        pokemon.setAspects(pokemonEntity.getAspects().get());
+        pokemon.updateForm();
         var data = accessor.getServerData();
         tooltip.clear();
 

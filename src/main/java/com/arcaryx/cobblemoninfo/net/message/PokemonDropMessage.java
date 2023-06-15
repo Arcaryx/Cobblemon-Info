@@ -25,6 +25,7 @@ public class PokemonDropMessage {
         buf.writeInt(msg.getDrops().size());
         for (PokemonDrop drop : msg.getDrops()) {
             buf.writeResourceLocation(drop.getSpecies());
+            buf.writeUtf(drop.getForm());
             buf.writeResourceLocation(drop.getItem());
             buf.writeFloat(drop.getChance());
             buf.writeInt(drop.getRange().getFirst());
@@ -37,11 +38,12 @@ public class PokemonDropMessage {
         List<PokemonDrop> drops = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             ResourceLocation species = buf.readResourceLocation();
+            String form = buf.readUtf();
             ResourceLocation item = buf.readResourceLocation();
             float chance = buf.readFloat();
             int min = buf.readInt();
             int max = buf.readInt();
-            drops.add(new PokemonDrop(species, item, chance, min, max));
+            drops.add(new PokemonDrop(species, form, item, chance, min, max));
         }
         return new PokemonDropMessage(drops);
     }
