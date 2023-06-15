@@ -13,7 +13,7 @@ public class ClientCache {
     public static void setPokemonDrops(List<PokemonDrop> drops) {
         pokemonDrops.clear();
         for (var drop : drops) {
-            var pokemon = Pair.of( drop.getSpecies(), drop.getForm());
+            var pokemon = Pair.of(drop.getSpecies(), drop.getForm());
             if (!pokemonDrops.containsKey(pokemon))
                 pokemonDrops.put(pokemon, new ArrayList<>());
             pokemonDrops.get(pokemon).add(drop);

@@ -34,7 +34,7 @@ public abstract class MixinJEIConfig {
             var forms = species.getForms().isEmpty() ? Arrays.asList(species.getStandardForm()) : species.getForms();
             for (var form : forms) {
                 var formTexture = PokemonModelRepository.INSTANCE.getTexture(species.getResourceIdentifier(), Set.copyOf(form.getAspects()), null);
-                var isBaseForm = form == species.getStandardForm();
+                var isBaseForm = form.getName().equals(species.getStandardForm().getName());
                 var hasNewTexture = baseTexture != formTexture;
                 var hasNewDrops = !ClientCache.sameDrops(species, form, species, species.getStandardForm());
                 if (!isBaseForm && !hasNewTexture && !hasNewDrops)
