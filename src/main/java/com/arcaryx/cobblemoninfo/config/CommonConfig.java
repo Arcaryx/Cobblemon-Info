@@ -15,6 +15,7 @@ public class CommonConfig {
     public final ForgeConfigSpec.EnumValue<ShowType> showPokemonGender, showPokemonHealth, showPokemonTrainer, showPokemonFriendship,
             showPokemonTypes, showPokemonRewardEvs, showPokemonNature, showPokemonAbility, showPokemonIvs, showPokemonEvs, showPokemonDexEntry;
     public final ForgeConfigSpec.EnumValue<ShowType> showHealerEnergy;
+    public final ForgeConfigSpec.BooleanValue hideNonPokemonDrops;
 
     public CommonConfig(ForgeConfigSpec.Builder builder){
         builder.push("jade");
@@ -35,6 +36,10 @@ public class CommonConfig {
         showPokemonDexEntry =  builder.defineEnum("showPokemonDexEntry", ShowType.SNEAK);
         builder.pop().push("misc");
         showHealerEnergy = builder.defineEnum("showHealerEnergy", ShowType.SHOW);
+        builder.pop().pop().push("jer").push("pokemon");
+        hideNonPokemonDrops = builder
+                .comment("Hide non-Pokemon drops from the JER catalog.")
+                .define("hideNonPokemonDrops", false);
         builder.pop().pop();
     }
 }

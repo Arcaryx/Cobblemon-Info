@@ -1,5 +1,6 @@
 package com.arcaryx.cobblemoninfo.mixin.jer;
 
+import com.arcaryx.cobblemoninfo.CobblemonInfo;
 import com.arcaryx.cobblemoninfo.data.ClientCache;
 import com.arcaryx.cobblemoninfo.mixin.cobblemon.PokemonAccessor;
 import com.cobblemon.mod.common.CobblemonEntities;
@@ -20,14 +21,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Mixin(value = JEIConfig.class, remap = false)
 public abstract class MixinJEIConfig {
+
     @Inject(method = "registerRecipes(Lmezz/jei/api/registration/IRecipeRegistration;)V", at=@At(value="HEAD"), require = 0)
     private void registerRecipes(IRecipeRegistration registration, CallbackInfo ci) {
+        if (CobblemonInfo.COMMON.hideNonPokemonDrops.get())
+            MobRegistry.getInstance().clear();
         var pokemonSpecies = PokemonSpecies.INSTANCE.getSpecies();
         for (var species : pokemonSpecies) {
             var baseTexture = PokemonModelRepository.INSTANCE.getTexture(species.getResourceIdentifier(), Set.copyOf(species.getStandardForm().getAspects()), null);
