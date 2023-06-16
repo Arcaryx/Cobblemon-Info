@@ -28,6 +28,7 @@ public class ConfigSyncMessage {
         buf.writeEnum(message.config.showPokemonEvs);
         buf.writeEnum(message.config.showPokemonDexEntry);
         buf.writeEnum(message.config.showHealerEnergy);
+        buf.writeEnum(message.config.showApricornProgress);
         buf.writeBoolean(message.config.hideNonPokemonDrops);
     }
 
@@ -46,6 +47,7 @@ public class ConfigSyncMessage {
         config.showPokemonEvs = buf.readEnum(CommonConfig.ShowType.class);
         config.showPokemonDexEntry = buf.readEnum(CommonConfig.ShowType.class);
         config.showHealerEnergy = buf.readEnum(CommonConfig.ShowType.class);
+        config.showApricornProgress = buf.readEnum(CommonConfig.ShowType.class);
         config.hideNonPokemonDrops = buf.readBoolean();
 
         return new ConfigSyncMessage(config);
