@@ -55,7 +55,7 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
                 data.putString(TAG_TRAINER_NAME, trainer.getDisplayName().getString());
         }
 
-        if (CobblemonInfo.COMMON.showpokemonFriendship.get() != CommonConfig.ShowType.HIDE && !pokemon.isWild())
+        if (CobblemonInfo.COMMON.showPokemonFriendship.get() != CommonConfig.ShowType.HIDE && !pokemon.isWild())
             data.putInt(TAG_FRIENDSHIP, pokemon.getFriendship());
 
         if (CobblemonInfo.COMMON.showPokemonRewardEvs.get() != CommonConfig.ShowType.HIDE)
@@ -105,7 +105,7 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         if (showTrainer == CommonConfig.ShowType.SHOW || (showTrainer == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching()))
             tooltip.add(Component.literal("Trainer: ").append(data.getString(TAG_TRAINER_NAME)));
 
-        var showFriendship = data.contains(TAG_FRIENDSHIP) ? CobblemonInfo.COMMON.showpokemonFriendship.get() : CommonConfig.ShowType.HIDE;
+        var showFriendship = data.contains(TAG_FRIENDSHIP) ? CobblemonInfo.COMMON.showPokemonFriendship.get() : CommonConfig.ShowType.HIDE;
         if (showFriendship == CommonConfig.ShowType.SHOW || (showFriendship == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
             double percentage = (data.getInt(TAG_FRIENDSHIP) / 255.0F) * 100;
             int flooredPercentage = (int)Math.floor(percentage);
