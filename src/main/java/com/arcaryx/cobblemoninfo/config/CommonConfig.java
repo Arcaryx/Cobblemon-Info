@@ -19,6 +19,7 @@ public class CommonConfig {
     public ShowType showPokemonGender, showPokemonHealth, showPokemonTrainer, showPokemonFriendship,
             showPokemonTypes, showPokemonRewardEvs, showPokemonNature, showPokemonAbility, showPokemonIvs, showPokemonEvs, showPokemonDexEntry;
     public ShowType showHealerEnergy;
+    public boolean hideNonPokemonDrops;
 
     private final Path configPath;
 
@@ -50,6 +51,7 @@ public class CommonConfig {
         showPokemonEvs = ShowType.valueOf(properties.getProperty("showPokemonEvs", ShowType.SHOW.name()));
         showPokemonDexEntry = ShowType.valueOf(properties.getProperty("showPokemonDexEntry", ShowType.SNEAK.name()));
         showHealerEnergy = ShowType.valueOf(properties.getProperty("showHealerEnergy", ShowType.SHOW.name()));
+        hideNonPokemonDrops = Boolean.parseBoolean(properties.getProperty("hideNonPokemonDrops", "false"));
 
         saveConfig();
     }
@@ -70,6 +72,7 @@ public class CommonConfig {
         properties.setProperty("showPokemonEvs", showPokemonEvs.name());
         properties.setProperty("showPokemonDexEntry", showPokemonDexEntry.name());
         properties.setProperty("showHealerEnergy", showHealerEnergy.name());
+        properties.setProperty("hideNonPokemonDrops", Boolean.toString(hideNonPokemonDrops));
 
         try (OutputStream outputStream = Files.newOutputStream(configPath)) {
             properties.store(outputStream, "Fabric config for the mod");
