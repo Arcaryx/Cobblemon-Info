@@ -22,7 +22,6 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.impl.ui.HealthElement;
 
-import java.util.HashSet;
 import java.util.stream.StreamSupport;
 
 public enum PokemonProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
@@ -30,6 +29,7 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
 
     public static final String TAG_GENDER = "ci_gender";
     public static final String TAG_TRAINER_NAME = "ci_trainer_name";
+    public static final String TAG_FRIENDSHIP = "ci_friendship";
     public static final String TAG_NATURE_NAME = "ci_nature_name";
     public static final String TAG_ABILITY_NAME = "ci_ability_name";
     public static final String TAG_ABILITY_HIDDEN = "ci_ability_hidden";
@@ -54,11 +54,11 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
                 data.putString(TAG_TRAINER_NAME, trainer.getDisplayName().getString());
         }
 
-        if (CobblemonInfo.config.showPokemonRewardEvs != CommonConfig.ShowType.HIDE) {
+        if (CobblemonInfo.config.showPokemonFriendship != CommonConfig.ShowType.HIDE && !pokemon.isWild())
+            data.putInt(TAG_FRIENDSHIP, pokemon.getFriendship());
+
+        if (CobblemonInfo.config.showPokemonRewardEvs != CommonConfig.ShowType.HIDE)
             data.put(TAG_EV_YIELD, PokemonUtils.saveStatMapToCompoundTag(pokemon.getForm().getEvYield()));
-        }
-
-
 
         if (CobblemonInfo.config.showPokemonNature != CommonConfig.ShowType.HIDE)
             data.putString(TAG_NATURE_NAME, pokemon.getNature().getDisplayName());
@@ -105,6 +105,13 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         var showTrainer = data.contains(TAG_TRAINER_NAME) ? CobblemonInfo.config.showPokemonTrainer : CommonConfig.ShowType.HIDE;
         if (showTrainer == CommonConfig.ShowType.SHOW || (showTrainer == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching()))
             tooltip.add(Component.literal("Trainer: ").append(data.getString(TAG_TRAINER_NAME)));
+
+        var showFriendship = data.contains(TAG_FRIENDSHIP) ? CobblemonInfo.config.showPokemonFriendship : CommonConfig.ShowType.HIDE;
+        if (showFriendship == CommonConfig.ShowType.SHOW || (showFriendship == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
+            double percentage = (data.getInt(TAG_FRIENDSHIP) / 255.0F) * 100;
+            int flooredPercentage = (int)Math.floor(percentage);
+            tooltip.add(Component.literal(String.format("Friendship: %d (%d%%)", data.getInt(TAG_FRIENDSHIP), flooredPercentage)));
+        }
 
         var showTypes = CobblemonInfo.config.showPokemonTypes;
         if (showTypes == CommonConfig.ShowType.SHOW || (showTypes == CommonConfig.ShowType.SNEAK && accessor.getPlayer().isCrouching())) {

@@ -19,6 +19,7 @@ public class ConfigSyncMessage {
         buf.writeEnum(message.config.showPokemonGender);
         buf.writeEnum(message.config.showPokemonHealth);
         buf.writeEnum(message.config.showPokemonTrainer);
+        buf.writeEnum(message.config.showPokemonFriendship);
         buf.writeEnum(message.config.showPokemonTypes);
         buf.writeEnum(message.config.showPokemonRewardEvs);
         buf.writeEnum(message.config.showPokemonNature);
@@ -35,6 +36,7 @@ public class ConfigSyncMessage {
         config.showPokemonGender = buf.readEnum(CommonConfig.ShowType.class);
         config.showPokemonHealth = buf.readEnum(CommonConfig.ShowType.class);
         config.showPokemonTrainer = buf.readEnum(CommonConfig.ShowType.class);
+        config.showPokemonFriendship = buf.readEnum(CommonConfig.ShowType.class);
         config.showPokemonTypes = buf.readEnum(CommonConfig.ShowType.class);
         config.showPokemonRewardEvs = buf.readEnum(CommonConfig.ShowType.class);
         config.showPokemonNature = buf.readEnum(CommonConfig.ShowType.class);

@@ -16,8 +16,8 @@ public class CommonConfig {
     }
 
     public boolean modifyPokemonTooltip;
-    public ShowType showPokemonGender, showPokemonHealth, showPokemonTrainer, showPokemonTypes, showPokemonRewardEvs,
-            showPokemonNature, showPokemonAbility, showPokemonIvs, showPokemonEvs, showPokemonDexEntry;
+    public ShowType showPokemonGender, showPokemonHealth, showPokemonTrainer, showPokemonFriendship,
+            showPokemonTypes, showPokemonRewardEvs, showPokemonNature, showPokemonAbility, showPokemonIvs, showPokemonEvs, showPokemonDexEntry;
     public ShowType showHealerEnergy;
 
     private final Path configPath;
@@ -41,6 +41,7 @@ public class CommonConfig {
         showPokemonGender = ShowType.valueOf(properties.getProperty("showPokemonGender", ShowType.SHOW.name()));
         showPokemonHealth = ShowType.valueOf(properties.getProperty("showPokemonHealth", ShowType.SHOW.name()));
         showPokemonTrainer = ShowType.valueOf(properties.getProperty("showPokemonTrainer", ShowType.SHOW.name()));
+        showPokemonFriendship = ShowType.valueOf(properties.getProperty("showPokemonFriendship", ShowType.SHOW.name()));
         showPokemonTypes = ShowType.valueOf(properties.getProperty("showPokemonTypes", ShowType.SHOW.name()));
         showPokemonRewardEvs = ShowType.valueOf(properties.getProperty("showPokemonRewardEvs", ShowType.SHOW.name()));
         showPokemonNature = ShowType.valueOf(properties.getProperty("showPokemonNature", ShowType.SHOW.name()));
@@ -60,6 +61,7 @@ public class CommonConfig {
         properties.setProperty("showPokemonGender", showPokemonGender.name());
         properties.setProperty("showPokemonHealth", showPokemonHealth.name());
         properties.setProperty("showPokemonTrainer", showPokemonTrainer.name());
+        properties.setProperty("showPokemonFriendship", showPokemonFriendship.name());
         properties.setProperty("showPokemonTypes", showPokemonTypes.name());
         properties.setProperty("showPokemonRewardEvs", showPokemonRewardEvs.name());
         properties.setProperty("showPokemonNature", showPokemonNature.name());
