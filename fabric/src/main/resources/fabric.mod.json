@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": ["${mod_authors}"],
+  "contact": {},
+
+  "license": "MPL2.0",
+  "icon": "assets/${mod_id}/icon.png",
+
+  "environment": "*",
+  "entrypoints": {},
+  "mixins": [
+    "cobblemoninfo.mixins.json",
+    "cobblemoninfo-common.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": ">=${minecraft_version}",
+    "java": ">=17",
+    "fabric-api": "*",
+    "cobblemon": ">=1.3"
+  }
+}
