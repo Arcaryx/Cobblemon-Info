@@ -12,7 +12,14 @@
   "icon": "assets/${mod_id}/icon.png",
 
   "environment": "*",
-  "entrypoints": {},
+  "entrypoints": {
+    "main": [
+      "${mod_base_package}.fabric.CobblemonInfoFabric"
+    ],
+    "jade": [
+      "${mod_base_package}.jade.CobblemonJadePlugin"
+    ]
+  },
   "mixins": [
     "cobblemoninfo.mixins.json",
     "cobblemoninfo-common.mixins.json"
