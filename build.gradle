@@ -37,6 +37,8 @@ allprojects {
                 includeGroup 'curse.maven'
             }
         }
+        maven { url = "https://maven.impactdev.net/repository/development/" }
+
     }
 
     tasks.withType(JavaCompile) {
