@@ -34,11 +34,16 @@ allprojects {
         maven {
             url "https://cursemaven.com"
             content {
-                includeGroup 'curse.maven'
+                includeGroup "curse.maven"
             }
         }
         maven { url = "https://maven.impactdev.net/repository/development/" }
-
+        maven {
+            url "https://api.modrinth.com/maven"
+            content {
+                includeGroup "maven.modrinth"
+            }
+        }
     }
 
     tasks.withType(JavaCompile) {

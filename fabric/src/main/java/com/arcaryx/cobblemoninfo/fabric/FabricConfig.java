@@ -6,6 +6,8 @@ import com.arcaryx.cobblemoninfo.config.ShowType;
 import com.arcaryx.cobblemoninfo.waila.TooltipType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -17,12 +19,14 @@ import java.util.Collections;
 import java.util.List;
 
 public class FabricConfig implements IConfig {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path CONFIG_PATH = Paths.get("config", CobblemonInfo.MOD_ID);
+    private static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .registerTypeAdapter(new TypeToken<Pair<TooltipType, ShowType>>(){}.getType(), new PairAdapter())
+            .create();
+    private static final Path CONFIG_PATH = Paths.get("config", CobblemonInfo.MOD_ID + ".json");
 
     private boolean modifyPokemonTooltip = true;
-    private List<TooltipType> pokemonTooltipsShow = TooltipType.defaultShow;
-    private List<TooltipType> pokemonTooltipsSneak = TooltipType.defaultSneak;
+    private List<Pair<TooltipType, ShowType>> pokemonTooltips = TooltipType.defaults;
     private ShowType showHealerEnergy = ShowType.SHOW;
     private ShowType showApricornProgress = ShowType.SHOW;
 
@@ -38,8 +42,7 @@ public class FabricConfig implements IConfig {
         try (FileReader reader = new FileReader(CONFIG_PATH.toFile())) {
             FabricConfig config = GSON.fromJson(reader, FabricConfig.class);
             this.modifyPokemonTooltip = config.modifyPokemonTooltip;
-            this.pokemonTooltipsShow = config.pokemonTooltipsShow;
-            this.pokemonTooltipsSneak = config.pokemonTooltipsSneak;
+            this.pokemonTooltips = config.pokemonTooltips;
             this.showHealerEnergy = config.showHealerEnergy;
             this.showApricornProgress = config.showApricornProgress;
         } catch (IOException e) {
@@ -61,13 +64,8 @@ public class FabricConfig implements IConfig {
     }
 
     @Override
-    public List<TooltipType> getPokemonShowTooltips() {
-        return Collections.unmodifiableList(pokemonTooltipsShow);
-    }
-
-    @Override
-    public List<TooltipType> getPokemonSneakTooltips() {
-        return Collections.unmodifiableList(pokemonTooltipsSneak);
+    public List<Pair<TooltipType, ShowType>> getPokemonTooltips() {
+        return Collections.unmodifiableList(pokemonTooltips);
     }
 
     @Override

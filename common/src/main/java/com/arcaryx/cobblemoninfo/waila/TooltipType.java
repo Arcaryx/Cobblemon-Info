@@ -1,5 +1,8 @@
 package com.arcaryx.cobblemoninfo.waila;
 
+import com.arcaryx.cobblemoninfo.config.ShowType;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,29 +21,32 @@ public enum TooltipType {
     HEALER_ENERGY,
     APRICORN_GROWTH;
 
-    public static boolean check(String name) {
-        for (TooltipType t : TooltipType.values()) {
-            if (t.name().equals(name)) {
-                return true;
-            }
+
+    public static boolean check(Object entry) {
+        if (!(entry instanceof String entryStr)) {
+            return false;
         }
-        return false;
+        var str = entryStr.split(":");
+        if (str.length != 2) {
+            return false;
+        }
+        if (Arrays.stream(TooltipType.values()).noneMatch(x -> str[0].equals(x.name()))) {
+            return false;
+        }
+        return Arrays.stream(ShowType.values()).anyMatch(x -> str[1].equals(x.name()));
     }
 
-    public static final List<TooltipType> defaultShow = Arrays.asList(
-            TooltipType.GENDER,
-            TooltipType.HEALTH,
-            TooltipType.TRAINER,
-            TooltipType.FRIENDSHIP,
-            TooltipType.TYPES,
-            TooltipType.REWARD_EVS,
-            TooltipType.NATURE,
-            TooltipType.ABILITY,
-            TooltipType.IVS,
-            TooltipType.EVS
-    );
-
-    public static final List<TooltipType> defaultSneak = Arrays.asList(
-            TooltipType.DEX_ENTRY
+    public static final List<Pair<TooltipType, ShowType>> defaults = Arrays.asList(
+            Pair.of(TooltipType.GENDER, ShowType.SHOW),
+            Pair.of(TooltipType.HEALTH, ShowType.SHOW),
+            Pair.of(TooltipType.TRAINER, ShowType.SHOW),
+            Pair.of(TooltipType.FRIENDSHIP, ShowType.SHOW),
+            Pair.of(TooltipType.TYPES, ShowType.SHOW),
+            Pair.of(TooltipType.REWARD_EVS, ShowType.SHOW),
+            Pair.of(TooltipType.NATURE, ShowType.SHOW),
+            Pair.of(TooltipType.ABILITY, ShowType.SHOW),
+            Pair.of(TooltipType.IVS, ShowType.SHOW),
+            Pair.of(TooltipType.EVS, ShowType.SHOW),
+            Pair.of(TooltipType.DEX_ENTRY, ShowType.SNEAK)
     );
 }

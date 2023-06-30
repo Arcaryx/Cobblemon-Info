@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import org.apache.commons.lang3.tuple.Pair;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -24,6 +25,7 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.impl.ui.HealthElement;
 
+import java.util.List;
 import java.util.stream.StreamSupport;
 
 public enum PokemonProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
@@ -51,43 +53,44 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         }
 
         var pokemon = pokemonEntity.getPokemon();
+        var tooltips = CobblemonInfo.CONFIG.getPokemonTooltips();
 
-        if (configContains(TooltipType.GENDER)) {
+        if (configContains(tooltips, TooltipType.GENDER)) {
             data.putString(TAG_GENDER, pokemon.getGender().getShowdownName());
         }
 
-        if (configContains(TooltipType.TRAINER) && pokemon.getOwnerUUID() != null) {
+        if (configContains(tooltips, TooltipType.TRAINER) && pokemon.getOwnerUUID() != null) {
             var trainer = level.getPlayerByUUID(pokemon.getOwnerUUID());
             if (trainer != null) {
                 data.putString(TAG_TRAINER_NAME, trainer.getDisplayName().getString());
             }
         }
 
-        if (configContains(TooltipType.FRIENDSHIP) && !pokemon.isWild()) {
+        if (configContains(tooltips, TooltipType.FRIENDSHIP) && !pokemon.isWild()) {
             data.putInt(TAG_FRIENDSHIP, pokemon.getFriendship());
         }
 
-        if (configContains(TooltipType.REWARD_EVS)) {
+        if (configContains(tooltips, TooltipType.REWARD_EVS)) {
             data.put(TAG_EV_YIELD, PokemonUtils.saveStatMapToCompoundTag(pokemon.getForm().getEvYield()));
         }
 
-        if (configContains(TooltipType.NATURE)) {
+        if (configContains(tooltips, TooltipType.NATURE)) {
             data.putString(TAG_NATURE_NAME, pokemon.getNature().getDisplayName());
             if (pokemon.getMintedNature() != null) {
                 data.putString(TAG_MINTED_NATURE_NAME, pokemon.getMintedNature().getDisplayName());
             }
         }
 
-        if (configContains(TooltipType.ABILITY)) {
+        if (configContains(tooltips, TooltipType.ABILITY)) {
             data.putString(TAG_ABILITY_NAME, pokemon.getAbility().getDisplayName());
             data.putBoolean(TAG_ABILITY_HIDDEN, PokemonUtils.hasHiddenAbility(pokemon));
         }
 
-        if (configContains(TooltipType.IVS)) {
+        if (configContains(tooltips, TooltipType.IVS)) {
             data.put(TAG_IVS, pokemon.getIvs().saveToNBT(new CompoundTag()));
         }
 
-        if (configContains(TooltipType.EVS)) {
+        if (configContains(tooltips, TooltipType.EVS)) {
             data.put(TAG_EVS, pokemon.getEvs().saveToNBT(new CompoundTag()));
         }
     }
@@ -107,13 +110,14 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         pokemon.updateForm();
         tooltip.clear();
         var data = accessor.getServerData();
+        var tooltips = CobblemonInfo.CONFIG.getPokemonTooltips();
 
         // TODO: Gender is special case for now (shows with Pokemon name)
         var showGender = ShowType.SHOW;
         if (!data.contains(TAG_GENDER)) {
             showGender = ShowType.HIDE;
-        } else if (!(CobblemonInfo.CONFIG.getPokemonShowTooltips().contains(TooltipType.GENDER) ||
-                (accessor.getPlayer().isCrouching() && CobblemonInfo.CONFIG.getPokemonSneakTooltips().contains(TooltipType.GENDER)))) {
+        } else if (!(tooltips.stream().anyMatch(x -> x.getLeft() == TooltipType.GENDER && x.getRight() == ShowType.SHOW) ||
+                (accessor.getPlayer().isCrouching() && tooltips.stream().anyMatch(x -> x.getLeft() == TooltipType.GENDER && x.getRight() == ShowType.SNEAK)))) {
             showGender = ShowType.HIDE;
         }
         var gender = data.contains(TAG_GENDER) ? PokemonUtils.getGenderFromShowdownName(data.getString(TAG_GENDER)) : Gender.GENDERLESS;
@@ -128,14 +132,14 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
             tooltip.add(pokemon.getDisplayName().withStyle(ChatFormatting.WHITE));
         }
 
-        for (var type : CobblemonInfo.CONFIG.getPokemonShowTooltips()) {
-            addTooltip(type, tooltip, accessor, pokemonEntity, pokemon);
-        }
-        if (accessor.getPlayer().isCrouching()) {
-            for (var type : CobblemonInfo.CONFIG.getPokemonSneakTooltips()) {
-                addTooltip(type, tooltip, accessor, pokemonEntity, pokemon);
+        for (var type : tooltips) {
+            if (type.getRight() == ShowType.SHOW) {
+                addTooltip(type.getLeft(), tooltip, accessor, pokemonEntity, pokemon);
+            } else if (type.getRight() == ShowType.SNEAK && accessor.getPlayer().isCrouching()) {
+                addTooltip(type.getLeft(), tooltip, accessor, pokemonEntity, pokemon);
             }
-        } else if (!CobblemonInfo.CONFIG.getPokemonSneakTooltips().isEmpty()) {
+        }
+        if (!accessor.getPlayer().isCrouching() && tooltips.stream().anyMatch(x -> x.getRight() == ShowType.SNEAK)) {
             tooltip.add(Component.literal("<sneak for additional info>").withStyle(ChatFormatting.DARK_GRAY));
         }
     }
@@ -145,9 +149,8 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         return CobblemonJadePlugin.POKEMON_ENTITY;
     }
 
-    private boolean configContains(TooltipType type) {
-        return CobblemonInfo.CONFIG.getPokemonShowTooltips().contains(type) ||
-                CobblemonInfo.CONFIG.getPokemonSneakTooltips().contains(type);
+    private boolean configContains(List<Pair<TooltipType, ShowType>> tooltips, TooltipType type) {
+        return tooltips.stream().anyMatch(x -> x.getLeft() == type && x.getRight() != ShowType.HIDE);
     }
 
     private void addTooltip(TooltipType tooltipType, ITooltip tooltip, EntityAccessor accessor, PokemonEntity pokemonEntity, Pokemon pokemon) {

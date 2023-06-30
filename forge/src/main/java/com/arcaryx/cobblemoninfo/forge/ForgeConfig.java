@@ -4,13 +4,13 @@ import com.arcaryx.cobblemoninfo.config.IConfig;
 import com.arcaryx.cobblemoninfo.config.ShowType;
 import com.arcaryx.cobblemoninfo.waila.TooltipType;
 import net.minecraftforge.common.ForgeConfigSpec;
+import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ForgeConfig implements IConfig {
     private final ForgeConfigSpec.BooleanValue modifyPokemonTooltip;
-    private final ForgeConfigSpec.ConfigValue<List<? extends TooltipType>> pokemonTooltipsShow, pokemonTooltipsSneak;
+    private final ForgeConfigSpec.ConfigValue<List<? extends String>> pokemonTooltips;
     private final ForgeConfigSpec.EnumValue<ShowType> showHealerEnergy, showApricornProgress;
 
     public ForgeConfig(ForgeConfigSpec.Builder builder) {
@@ -19,10 +19,7 @@ public class ForgeConfig implements IConfig {
                 .comment("Modify the Pokemon tooltip.")
                 .define("modifyPokemonTooltip", true);
         builder.push("pokemon");
-        pokemonTooltipsShow = builder.defineList("pokemonTooltipsShow", TooltipType.defaultShow,
-                x -> TooltipType.check((String)x));
-        pokemonTooltipsSneak = builder.defineList("pokemonTooltipsSneak", TooltipType.defaultSneak,
-                x -> TooltipType.check((String)x));
+        pokemonTooltips = builder.defineList("pokemonTooltips", TooltipType.defaults.stream().map(x -> x.getLeft().name() + ":" + x.getRight().name()).toList(), TooltipType::check);
         builder.pop().push("misc");
         showHealerEnergy = builder.defineEnum("showHealerEnergy", ShowType.SHOW);
         showApricornProgress = builder.defineEnum("showApricornProgress", ShowType.SHOW);
@@ -34,13 +31,11 @@ public class ForgeConfig implements IConfig {
     }
 
     @Override
-    public List<TooltipType> getPokemonShowTooltips() {
-        return Collections.unmodifiableList(pokemonTooltipsShow.get());
-    }
-
-    @Override
-    public List<TooltipType> getPokemonSneakTooltips() {
-        return Collections.unmodifiableList(pokemonTooltipsSneak.get());
+    public List<Pair<TooltipType, ShowType>> getPokemonTooltips() {
+        return pokemonTooltips.get().stream().map(x -> {
+            var str = x.split(":");
+            return Pair.of(TooltipType.valueOf(str[0]), ShowType.valueOf(str[1]));
+        }).toList();
     }
 
     @Override
