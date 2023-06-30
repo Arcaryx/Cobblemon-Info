@@ -30,12 +30,14 @@ public class FabricConfig implements IConfig {
     private ShowType showHealerEnergy = ShowType.SHOW;
     private ShowType showApricornProgress = ShowType.SHOW;
 
-    public FabricConfig() {
+    public static FabricConfig load() {
+        var config = new FabricConfig();
         if (!Files.exists(CONFIG_PATH)) {
-            saveConfig();
+            config.saveConfig();
         } else {
-            loadConfig();
+            config.loadConfig();
         }
+        return config;
     }
 
     private void loadConfig() {
@@ -45,7 +47,7 @@ public class FabricConfig implements IConfig {
             this.pokemonTooltips = config.pokemonTooltips;
             this.showHealerEnergy = config.showHealerEnergy;
             this.showApricornProgress = config.showApricornProgress;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

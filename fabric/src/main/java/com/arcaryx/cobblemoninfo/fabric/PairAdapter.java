@@ -14,7 +14,7 @@ public class PairAdapter extends TypeAdapter<Pair<TooltipType, ShowType>> {
     public void write(JsonWriter out, Pair<TooltipType, ShowType> value) throws IOException {
         out.beginObject();
         out.name("tooltip").value(value.getLeft().name());
-        out.name("showType").value(value.getRight().name());
+        out.name("type").value(value.getRight().name());
         out.endObject();
     }
 
@@ -26,7 +26,7 @@ public class PairAdapter extends TypeAdapter<Pair<TooltipType, ShowType>> {
         while (in.hasNext()) {
             switch (in.nextName()) {
                 case "tooltip" -> left = TooltipType.valueOf(in.nextString());
-                case "showType" -> right = ShowType.valueOf(in.nextString());
+                case "type" -> right = ShowType.valueOf(in.nextString());
             }
         }
         in.endObject();

@@ -6,7 +6,7 @@ import net.fabricmc.api.ModInitializer;
 public class CobblemonInfoFabric implements ModInitializer {
     @Override
     public void onInitialize() {
-        CobblemonInfo.CONFIG = new FabricConfig();
+        CobblemonInfo.CONFIG = FabricConfig.load();
         CobblemonInfo.init();
     }
 }
