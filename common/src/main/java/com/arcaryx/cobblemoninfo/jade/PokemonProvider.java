@@ -30,6 +30,7 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
     public static final String TAG_GENDER = "ci_gender";
     public static final String TAG_TRAINER_NAME = "ci_trainer_name";
     public static final String TAG_NATURE_NAME = "ci_nature_name";
+    public static final String TAG_MINTED_NATURE_NAME = "ci_minted_nature_name";
     public static final String TAG_FRIENDSHIP = "ci_friendship";
     public static final String TAG_ABILITY_NAME = "ci_ability_name";
     public static final String TAG_ABILITY_HIDDEN = "ci_ability_hidden";
@@ -70,6 +71,9 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
 
         if (CobblemonInfo.CONFIG.showPokemonNature() != ShowType.HIDE) {
             data.putString(TAG_NATURE_NAME, pokemon.getNature().getDisplayName());
+            if (pokemon.getMintedNature() != null) {
+                data.putString(TAG_MINTED_NATURE_NAME, pokemon.getMintedNature().getDisplayName());
+            }
         }
 
         if (CobblemonInfo.CONFIG.showPokemonAbility() != ShowType.HIDE) {
@@ -153,7 +157,13 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
 
         var showNature = !data.contains(TAG_NATURE_NAME) ? ShowType.HIDE : CobblemonInfo.CONFIG.showPokemonNature();
         if (showNature == ShowType.SHOW || (showNature == ShowType.SNEAK && accessor.getPlayer().isCrouching())) {
-            tooltip.add(Component.literal("Nature: ").append(Component.translatable(data.getString(TAG_NATURE_NAME))));
+            if (!data.contains(TAG_MINTED_NATURE_NAME)) {
+                tooltip.add(Component.literal("Nature: ").append(Component.translatable(data.getString(TAG_NATURE_NAME))));
+            } else {
+                tooltip.add(Component.literal("Nature: ")
+                        .append(Component.translatable(data.getString(TAG_MINTED_NATURE_NAME)))
+                        .append(Component.literal(" (Minted)")));
+            }
         }
 
         var showAbility = !data.contains(TAG_ABILITY_HIDDEN) ? ShowType.HIDE : CobblemonInfo.CONFIG.showPokemonAbility();
