@@ -1,4 +1,4 @@
-package com.arcaryx.cobblemoninfo.jade;
+package com.arcaryx.cobblemoninfo.waila.jade;
 
 import com.arcaryx.cobblemoninfo.CobblemonInfo;
 import com.arcaryx.cobblemoninfo.config.ShowType;

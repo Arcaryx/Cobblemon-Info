@@ -2,6 +2,9 @@ package com.arcaryx.cobblemoninfo.fabric;
 
 import com.arcaryx.cobblemoninfo.config.IConfig;
 import com.arcaryx.cobblemoninfo.config.ShowType;
+import com.arcaryx.cobblemoninfo.waila.TooltipType;
+
+import java.util.List;
 
 public class FabricConfig implements IConfig {
     @Override
@@ -10,58 +13,13 @@ public class FabricConfig implements IConfig {
     }
 
     @Override
-    public ShowType showPokemonGender() {
-        return ShowType.SHOW;
+    public List<TooltipType> getPokemonShowTooltips() {
+        return TooltipType.defaultShow;
     }
 
     @Override
-    public ShowType showPokemonHealth() {
-        return ShowType.SHOW;
-    }
-
-    @Override
-    public ShowType showPokemonTrainer() {
-        return ShowType.SHOW;
-    }
-
-    @Override
-    public ShowType showPokemonFriendship() {
-        return ShowType.SHOW;
-    }
-
-    @Override
-    public ShowType showPokemonTypes() {
-        return ShowType.SHOW;
-    }
-
-    @Override
-    public ShowType showPokemonRewardEvs() {
-        return ShowType.SHOW;
-    }
-
-    @Override
-    public ShowType showPokemonNature() {
-        return ShowType.SHOW;
-    }
-
-    @Override
-    public ShowType showPokemonAbility() {
-        return ShowType.SHOW;
-    }
-
-    @Override
-    public ShowType showPokemonIvs() {
-        return ShowType.SHOW;
-    }
-
-    @Override
-    public ShowType showPokemonEvs() {
-        return ShowType.SHOW;
-    }
-
-    @Override
-    public ShowType showPokemonDexEntry() {
-        return ShowType.SNEAK;
+    public List<TooltipType> getPokemonSneakTooltips() {
+        return TooltipType.defaultSneak;
     }
 
     @Override

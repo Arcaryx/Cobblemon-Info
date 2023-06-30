@@ -17,7 +17,7 @@
       "${mod_base_package}.fabric.CobblemonInfoFabric"
     ],
     "jade": [
-      "${mod_base_package}.jade.CobblemonJadePlugin"
+      "${mod_base_package}.waila.jade.CobblemonJadePlugin"
     ]
   },
   "mixins": [
