@@ -48,7 +48,6 @@ public enum TooltipType {
             Pair.of(TooltipType.TYPES, ShowType.SHOW),
             Pair.of(TooltipType.REWARD_EVS, ShowType.SHOW),
             Pair.of(TooltipType.TRAINER, ShowType.SNEAK),
-            Pair.of(TooltipType.NICKNAME, ShowType.SNEAK),
             Pair.of(TooltipType.FRIENDSHIP, ShowType.SNEAK),
             Pair.of(TooltipType.NATURE, ShowType.SNEAK),
             Pair.of(TooltipType.ABILITY, ShowType.SNEAK),
