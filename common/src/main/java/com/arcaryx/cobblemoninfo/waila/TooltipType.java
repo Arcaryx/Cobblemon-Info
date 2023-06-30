@@ -7,7 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum TooltipType {
-    GENDER,
+    TITLE_SPECIES,
+    TITLE_GENDER_SPECIES,
     HEALTH,
     TRAINER,
     FRIENDSHIP,
@@ -37,7 +38,7 @@ public enum TooltipType {
     }
 
     public static final List<Pair<TooltipType, ShowType>> defaults = Arrays.asList(
-            Pair.of(TooltipType.GENDER, ShowType.SHOW),
+            Pair.of(TooltipType.TITLE_GENDER_SPECIES, ShowType.SHOW),
             Pair.of(TooltipType.HEALTH, ShowType.SHOW),
             Pair.of(TooltipType.TRAINER, ShowType.SHOW),
             Pair.of(TooltipType.FRIENDSHIP, ShowType.SHOW),

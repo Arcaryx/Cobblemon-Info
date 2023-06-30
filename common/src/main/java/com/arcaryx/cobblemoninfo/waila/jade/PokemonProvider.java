@@ -55,7 +55,7 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         var pokemon = pokemonEntity.getPokemon();
         var tooltips = CobblemonInfo.CONFIG.getPokemonTooltips();
 
-        if (configContains(tooltips, TooltipType.GENDER)) {
+        if (configContains(tooltips, TooltipType.TITLE_GENDER_SPECIES)) {
             data.putString(TAG_GENDER, pokemon.getGender().getShowdownName());
         }
 
@@ -109,28 +109,7 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         pokemon.setAspects(pokemonEntity.getAspects().get());
         pokemon.updateForm();
         tooltip.clear();
-        var data = accessor.getServerData();
         var tooltips = CobblemonInfo.CONFIG.getPokemonTooltips();
-
-        // TODO: Gender is special case for now (shows with Pokemon name)
-        var showGender = ShowType.SHOW;
-        if (!data.contains(TAG_GENDER)) {
-            showGender = ShowType.HIDE;
-        } else if (!(tooltips.stream().anyMatch(x -> x.getLeft() == TooltipType.GENDER && x.getRight() == ShowType.SHOW) ||
-                (accessor.getPlayer().isCrouching() && tooltips.stream().anyMatch(x -> x.getLeft() == TooltipType.GENDER && x.getRight() == ShowType.SNEAK)))) {
-            showGender = ShowType.HIDE;
-        }
-        var gender = data.contains(TAG_GENDER) ? PokemonUtils.getGenderFromShowdownName(data.getString(TAG_GENDER)) : Gender.GENDERLESS;
-        if (gender == Gender.GENDERLESS) {
-            showGender = ShowType.HIDE;
-        }
-        if (showGender == ShowType.SHOW) {
-            var prefix = gender == Gender.MALE ? ChatFormatting.BLUE + "\u2642 " : ChatFormatting.LIGHT_PURPLE + "\u2640 ";
-            var component = Component.literal(prefix).append(pokemon.getDisplayName().withStyle(ChatFormatting.WHITE));
-            tooltip.add(component);
-        } else {
-            tooltip.add(pokemon.getDisplayName().withStyle(ChatFormatting.WHITE));
-        }
 
         for (var type : tooltips) {
             if (type.getRight() == ShowType.SHOW) {
@@ -156,7 +135,18 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
     private void addTooltip(TooltipType tooltipType, ITooltip tooltip, EntityAccessor accessor, PokemonEntity pokemonEntity, Pokemon pokemon) {
         var data = accessor.getServerData();
         switch (tooltipType) {
-            case GENDER -> {
+            case TITLE_SPECIES -> {
+                tooltip.add(pokemon.getDisplayName().withStyle(ChatFormatting.WHITE));
+            }
+            case TITLE_GENDER_SPECIES -> {
+                var gender = data.contains(TAG_GENDER) ? PokemonUtils.getGenderFromShowdownName(data.getString(TAG_GENDER)) : Gender.GENDERLESS;
+                if (gender != Gender.GENDERLESS) {
+                    var prefix = gender == Gender.MALE ? ChatFormatting.BLUE + "\u2642 " : ChatFormatting.LIGHT_PURPLE + "\u2640 ";
+                    var component = Component.literal(prefix).append(pokemon.getDisplayName().withStyle(ChatFormatting.WHITE));
+                    tooltip.add(component);
+                } else {
+                    tooltip.add(pokemon.getDisplayName().withStyle(ChatFormatting.WHITE));
+                }
             }
             case HEALTH -> {
                 tooltip.add(new HealthElement(pokemonEntity.getMaxHealth(), pokemonEntity.getHealth()));
