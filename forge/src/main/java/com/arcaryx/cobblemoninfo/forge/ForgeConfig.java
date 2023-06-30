@@ -19,7 +19,7 @@ public class ForgeConfig implements IConfig {
                 .comment("Modify the Pokemon tooltip.")
                 .define("modifyPokemonTooltip", true);
         builder.push("pokemon");
-        pokemonTooltips = builder.defineList("pokemonTooltips", TooltipType.defaults.stream().map(x -> x.getLeft().name() + ":" + x.getRight().name()).toList(), TooltipType::check);
+        pokemonTooltips = builder.defineList("pokemonTooltips", TooltipType.pokemonDefaults.stream().map(x -> x.getLeft().name() + ":" + x.getRight().name()).toList(), TooltipType::check);
         builder.pop().push("misc");
         showHealerEnergy = builder.defineEnum("showHealerEnergy", ShowType.SHOW);
         showApricornProgress = builder.defineEnum("showApricornProgress", ShowType.SHOW);

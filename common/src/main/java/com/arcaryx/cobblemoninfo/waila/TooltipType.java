@@ -9,8 +9,13 @@ import java.util.List;
 public enum TooltipType {
     TITLE_SPECIES,
     TITLE_GENDER_SPECIES,
+    TITLE_NICKNAME_SPECIES,
+    TITLE_GENDER_NICKNAME_SPECIES,
+    SPECIES,
+    GENDER,
     HEALTH,
     TRAINER,
+    NICKNAME,
     FRIENDSHIP,
     TYPES,
     REWARD_EVS,
@@ -37,17 +42,18 @@ public enum TooltipType {
         return Arrays.stream(ShowType.values()).anyMatch(x -> str[1].equals(x.name()));
     }
 
-    public static final List<Pair<TooltipType, ShowType>> defaults = Arrays.asList(
-            Pair.of(TooltipType.TITLE_GENDER_SPECIES, ShowType.SHOW),
+    public static final List<Pair<TooltipType, ShowType>> pokemonDefaults = Arrays.asList(
+            Pair.of(TooltipType.TITLE_GENDER_NICKNAME_SPECIES, ShowType.SHOW),
             Pair.of(TooltipType.HEALTH, ShowType.SHOW),
-            Pair.of(TooltipType.TRAINER, ShowType.SHOW),
-            Pair.of(TooltipType.FRIENDSHIP, ShowType.SHOW),
             Pair.of(TooltipType.TYPES, ShowType.SHOW),
             Pair.of(TooltipType.REWARD_EVS, ShowType.SHOW),
-            Pair.of(TooltipType.NATURE, ShowType.SHOW),
-            Pair.of(TooltipType.ABILITY, ShowType.SHOW),
-            Pair.of(TooltipType.IVS, ShowType.SHOW),
-            Pair.of(TooltipType.EVS, ShowType.SHOW),
+            Pair.of(TooltipType.TRAINER, ShowType.SNEAK),
+            Pair.of(TooltipType.NICKNAME, ShowType.SNEAK),
+            Pair.of(TooltipType.FRIENDSHIP, ShowType.SNEAK),
+            Pair.of(TooltipType.NATURE, ShowType.SNEAK),
+            Pair.of(TooltipType.ABILITY, ShowType.SNEAK),
+            Pair.of(TooltipType.IVS, ShowType.SNEAK),
+            Pair.of(TooltipType.EVS, ShowType.SNEAK),
             Pair.of(TooltipType.DEX_ENTRY, ShowType.SNEAK)
     );
 }

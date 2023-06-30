@@ -55,7 +55,9 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         var pokemon = pokemonEntity.getPokemon();
         var tooltips = CobblemonInfo.CONFIG.getPokemonTooltips();
 
-        if (configContains(tooltips, TooltipType.TITLE_GENDER_SPECIES)) {
+        if (configContains(tooltips, TooltipType.TITLE_GENDER_SPECIES) ||
+                configContains(tooltips, TooltipType.TITLE_GENDER_NICKNAME_SPECIES) ||
+                configContains(tooltips, TooltipType.GENDER)) {
             data.putString(TAG_GENDER, pokemon.getGender().getShowdownName());
         }
 
@@ -116,6 +118,8 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
                 addTooltip(type.getLeft(), tooltip, accessor, pokemonEntity, pokemon);
             } else if (type.getRight() == ShowType.SNEAK && accessor.getPlayer().isCrouching()) {
                 addTooltip(type.getLeft(), tooltip, accessor, pokemonEntity, pokemon);
+            } else if (type.getRight() == ShowType.NO_SNEAK && !accessor.getPlayer().isCrouching()) {
+                addTooltip(type.getLeft(), tooltip, accessor, pokemonEntity, pokemon);
             }
         }
         if (!accessor.getPlayer().isCrouching() && tooltips.stream().anyMatch(x -> x.getRight() == ShowType.SNEAK)) {
@@ -136,16 +140,66 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         var data = accessor.getServerData();
         switch (tooltipType) {
             case TITLE_SPECIES -> {
-                tooltip.add(pokemon.getDisplayName().withStyle(ChatFormatting.WHITE));
+                var component = pokemon.getSpecies().getTranslatedName().withStyle(ChatFormatting.WHITE);
+                if (pokemon.getSpecies().getStandardForm() != pokemon.getForm()) {
+                    component.append(Component.literal(String.format(" (%s)", pokemon.getForm().getName())).withStyle(ChatFormatting.WHITE));
+                }
+                tooltip.add(component);
             }
             case TITLE_GENDER_SPECIES -> {
                 var gender = data.contains(TAG_GENDER) ? PokemonUtils.getGenderFromShowdownName(data.getString(TAG_GENDER)) : Gender.GENDERLESS;
+                var component = pokemon.getSpecies().getTranslatedName().withStyle(ChatFormatting.WHITE);
                 if (gender != Gender.GENDERLESS) {
                     var prefix = gender == Gender.MALE ? ChatFormatting.BLUE + "\u2642 " : ChatFormatting.LIGHT_PURPLE + "\u2640 ";
-                    var component = Component.literal(prefix).append(pokemon.getDisplayName().withStyle(ChatFormatting.WHITE));
-                    tooltip.add(component);
+                    component = Component.literal(prefix).append(component);
+                }
+                if (pokemon.getSpecies().getStandardForm() != pokemon.getForm()) {
+                    component.append(Component.literal(String.format(" (%s)", pokemon.getForm().getName())).withStyle(ChatFormatting.WHITE));
+                }
+                tooltip.add(component);
+            }
+            case TITLE_NICKNAME_SPECIES -> {
+                var component = Component.empty();
+                if (pokemon.getNickname() != null && !pokemon.getNickname().getString().isEmpty()) {
+                    component.append("\"").append(pokemon.getNickname()).append("\" (").append(pokemon.getSpecies().getTranslatedName()).append(")");
                 } else {
-                    tooltip.add(pokemon.getDisplayName().withStyle(ChatFormatting.WHITE));
+                    component.append(pokemon.getSpecies().getTranslatedName()).withStyle(ChatFormatting.WHITE);
+                    if (pokemon.getSpecies().getStandardForm() != pokemon.getForm()) {
+                        component.append(Component.literal(String.format(" (%s)", pokemon.getForm().getName())).withStyle(ChatFormatting.WHITE));
+                    }
+                }
+                component.withStyle(ChatFormatting.WHITE);
+                tooltip.add(component);
+            }
+            case TITLE_GENDER_NICKNAME_SPECIES -> {
+                var gender = data.contains(TAG_GENDER) ? PokemonUtils.getGenderFromShowdownName(data.getString(TAG_GENDER)) : Gender.GENDERLESS;
+                var component = Component.empty();
+                if (gender != Gender.GENDERLESS) {
+                    var prefix = gender == Gender.MALE ? ChatFormatting.BLUE + "\u2642 " : ChatFormatting.LIGHT_PURPLE + "\u2640 ";
+                    component = component.append(prefix);
+                }
+                if (pokemon.getNickname() != null && !pokemon.getNickname().getString().isEmpty()) {
+                    component.append("\"").append(pokemon.getNickname()).append("\" (").append(pokemon.getSpecies().getTranslatedName()).append(")");
+                } else {
+                    component.append(pokemon.getSpecies().getTranslatedName()).withStyle(ChatFormatting.WHITE);
+                    if (pokemon.getSpecies().getStandardForm() != pokemon.getForm()) {
+                        component.append(Component.literal(String.format(" (%s)", pokemon.getForm().getName())).withStyle(ChatFormatting.WHITE));
+                    }
+                }
+                tooltip.add(component);
+            }
+            case SPECIES -> {
+                var component = Component.literal("Species: ").append(pokemon.getDisplayName());
+                if (pokemon.getSpecies().getStandardForm() != pokemon.getForm()) {
+                    component.append(Component.literal(String.format(" (%s)", pokemon.getForm().getName())));
+                }
+                tooltip.add(component);
+            }
+            case GENDER -> {
+                var gender = data.contains(TAG_GENDER) ? PokemonUtils.getGenderFromShowdownName(data.getString(TAG_GENDER)) : Gender.GENDERLESS;
+                if (gender != Gender.GENDERLESS) {
+                    var suffix = gender == Gender.MALE ? ChatFormatting.BLUE + "\u2642 " : ChatFormatting.LIGHT_PURPLE + "\u2640 ";
+                    tooltip.add(Component.literal("Gender: ").append(suffix));
                 }
             }
             case HEALTH -> {
@@ -154,6 +208,11 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
             case TRAINER -> {
                 if (data.contains(TAG_TRAINER_NAME)) {
                     tooltip.add(Component.literal("Trainer: ").append(data.getString(TAG_TRAINER_NAME)));
+                }
+            }
+            case NICKNAME -> {
+                if (pokemon.getNickname() != null && !pokemon.getNickname().getString().isEmpty()) {
+                    tooltip.add(Component.literal("Nickname: ").append(pokemon.getNickname()));
                 }
             }
             case FRIENDSHIP -> {
