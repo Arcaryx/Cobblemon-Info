@@ -28,7 +28,7 @@ import snownee.jade.impl.ui.HealthElement;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-public enum PokemonProvider implements IEntityComponentProvider, IServerDataProvider<Entity> {
+public enum PokemonProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
     INSTANCE;
 
     public static final String TAG_GENDER = "ci_gender";
@@ -43,12 +43,12 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
     public static final String TAG_EVS = "ci_evs";
 
     @Override
-    public void appendServerData(CompoundTag data, ServerPlayer player, Level level, Entity entity, boolean b) {
+    public void appendServerData(CompoundTag data, EntityAccessor entityAccessor) {
         if (!CobblemonInfo.CONFIG.modifyPokemonTooltip()) {
             return;
         }
 
-        if (!(entity instanceof PokemonEntity pokemonEntity)) {
+        if (!(entityAccessor.getEntity() instanceof PokemonEntity pokemonEntity)) {
             return;
         }
 
@@ -62,7 +62,7 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         }
 
         if (configContains(tooltips, TooltipType.TRAINER) && pokemon.getOwnerUUID() != null) {
-            var trainer = level.getPlayerByUUID(pokemon.getOwnerUUID());
+            var trainer = pokemonEntity.level().getPlayerByUUID(pokemon.getOwnerUUID());
             if (trainer != null) {
                 data.putString(TAG_TRAINER_NAME, trainer.getDisplayName().getString());
             }
@@ -282,8 +282,4 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
             }
         }
     }
-
-
-
-
 }
