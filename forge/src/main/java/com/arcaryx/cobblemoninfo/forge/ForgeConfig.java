@@ -9,7 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.List;
 
 public class ForgeConfig implements IConfig {
-    private final ForgeConfigSpec.BooleanValue modifyPokemonTooltip;
+    private final ForgeConfigSpec.BooleanValue modifyPokemonTooltip, hidePokemonLabel;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> pokemonTooltips;
     private final ForgeConfigSpec.EnumValue<ShowType> showHealerEnergy, showApricornProgress;
 
@@ -18,6 +18,9 @@ public class ForgeConfig implements IConfig {
         modifyPokemonTooltip = builder
                 .comment("Modify the Pokemon tooltip.")
                 .define("modifyPokemonTooltip", true);
+        hidePokemonLabel = builder
+                .comment("Hide the Pokemon label/nametag completely.")
+                .define("hidePokemonLabel", false);
         builder.push("pokemon");
         pokemonTooltips = builder.defineList("pokemonTooltips", TooltipType.pokemonDefaults.stream().map(x -> x.getLeft().name() + ":" + x.getRight().name()).toList(), TooltipType::check);
         builder.pop().push("misc");
@@ -28,6 +31,11 @@ public class ForgeConfig implements IConfig {
     @Override
     public boolean modifyPokemonTooltip() {
         return modifyPokemonTooltip.get();
+    }
+
+    @Override
+    public boolean hidePokemonLabel() {
+        return hidePokemonLabel.get();
     }
 
     @Override

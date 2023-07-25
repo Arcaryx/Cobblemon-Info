@@ -6,8 +6,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.List;
 
 public interface IConfig {
-    public boolean modifyPokemonTooltip();
-    public List<Pair<TooltipType, ShowType>> getPokemonTooltips();
-    public ShowType showHealerEnergy();
-    public ShowType showApricornProgress();
+    boolean modifyPokemonTooltip();
+    boolean hidePokemonLabel();
+    List<Pair<TooltipType, ShowType>> getPokemonTooltips();
+    ShowType showHealerEnergy();
+    ShowType showApricornProgress();
 }

@@ -26,6 +26,7 @@ public class FabricConfig implements IConfig {
     private static final Path CONFIG_PATH = Paths.get("config", CobblemonInfo.MOD_ID + ".json");
 
     private boolean modifyPokemonTooltip = true;
+    private boolean hidePokemonLabel = true;
     private List<Pair<TooltipType, ShowType>> pokemonTooltips = TooltipType.pokemonDefaults;
     private ShowType showHealerEnergy = ShowType.SHOW;
     private ShowType showApricornProgress = ShowType.SHOW;
@@ -44,6 +45,7 @@ public class FabricConfig implements IConfig {
         try (FileReader reader = new FileReader(CONFIG_PATH.toFile())) {
             FabricConfig config = GSON.fromJson(reader, FabricConfig.class);
             this.modifyPokemonTooltip = config.modifyPokemonTooltip;
+            this.hidePokemonLabel = config.hidePokemonLabel;
             this.pokemonTooltips = config.pokemonTooltips;
             this.showHealerEnergy = config.showHealerEnergy;
             this.showApricornProgress = config.showApricornProgress;
@@ -63,6 +65,11 @@ public class FabricConfig implements IConfig {
     @Override
     public boolean modifyPokemonTooltip() {
         return modifyPokemonTooltip;
+    }
+
+    @Override
+    public boolean hidePokemonLabel() {
+        return hidePokemonLabel;
     }
 
     @Override

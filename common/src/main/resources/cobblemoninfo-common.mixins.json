@@ -1,11 +1,12 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.arcaryx.cobblemoninfo.mixin.forge",
+  "package": "com.arcaryx.cobblemoninfo.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
   ],
   "client": [
+    "cobblemon.MixinPokemonRenderer"
   ],
   "injectors": {
     "defaultRequire": 1
