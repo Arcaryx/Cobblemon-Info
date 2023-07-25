@@ -24,6 +24,7 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.impl.ui.HealthElement;
+import snownee.jade.util.CommonProxy;
 
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -62,10 +63,11 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         }
 
         if (configContains(tooltips, TooltipType.TRAINER) && pokemon.getOwnerUUID() != null) {
-            var trainer = pokemonEntity.level().getPlayerByUUID(pokemon.getOwnerUUID());
-            if (trainer != null) {
-                data.putString(TAG_TRAINER_NAME, trainer.getDisplayName().getString());
+            var username = CommonProxy.getLastKnownUsername(pokemon.getOwnerUUID());
+            if (username == null) {
+                username = "???";
             }
+            data.putString(TAG_TRAINER_NAME, username);
         }
 
         if (configContains(tooltips, TooltipType.FRIENDSHIP) && !pokemon.isWild()) {
@@ -268,15 +270,15 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
                 }
             }
             case SNEAK_HINT -> {
-                if (!accessor.getPlayer().isCrouching() && tooltips.stream().anyMatch(x -> x.getRight() == ShowType.SNEAK)) {
-                    tooltip.add(Component.literal("<sneak for additional info>").withStyle(ChatFormatting.DARK_GRAY));
-                }
+                tooltip.add(Component.literal("<sneak for additional info>").withStyle(ChatFormatting.DARK_GRAY));
             }
             case BATTLE_HINT -> {
-                var component = Component.literal("<press ");
-                Component sendOutBinding = CurrentKeyAccessorKt.boundKey(PartySendBinding.INSTANCE).getDisplayName();
-                component.append(sendOutBinding).append(" to battle>");
-                tooltip.add(component.withStyle(ChatFormatting.DARK_GRAY));
+                if (!pokemonEntity.isOwnedBy(accessor.getPlayer())) {
+                    var component = Component.literal("<press ");
+                    Component sendOutBinding = CurrentKeyAccessorKt.boundKey(PartySendBinding.INSTANCE).getDisplayName();
+                    component.append(sendOutBinding).append(" to battle>");
+                    tooltip.add(component.withStyle(ChatFormatting.DARK_GRAY));
+                }
             }
         }
     }
