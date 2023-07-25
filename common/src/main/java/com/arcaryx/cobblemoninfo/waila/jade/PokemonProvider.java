@@ -5,6 +5,8 @@ import com.arcaryx.cobblemoninfo.config.ShowType;
 import com.arcaryx.cobblemoninfo.util.PokemonUtils;
 import com.arcaryx.cobblemoninfo.util.TextUtils;
 import com.arcaryx.cobblemoninfo.waila.TooltipType;
+import com.cobblemon.mod.common.client.keybind.CurrentKeyAccessorKt;
+import com.cobblemon.mod.common.client.keybind.keybinds.PartySendBinding;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Gender;
 import com.cobblemon.mod.common.pokemon.Pokemon;
@@ -113,15 +115,12 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
 
         for (var type : tooltips) {
             if (type.getRight() == ShowType.SHOW) {
-                addTooltip(type.getLeft(), tooltip, accessor, pokemonEntity, pokemon);
+                addTooltip(type.getLeft(), tooltip, accessor, pokemonEntity, pokemon, tooltips);
             } else if (type.getRight() == ShowType.SNEAK && accessor.getPlayer().isCrouching()) {
-                addTooltip(type.getLeft(), tooltip, accessor, pokemonEntity, pokemon);
+                addTooltip(type.getLeft(), tooltip, accessor, pokemonEntity, pokemon, tooltips);
             } else if (type.getRight() == ShowType.NO_SNEAK && !accessor.getPlayer().isCrouching()) {
-                addTooltip(type.getLeft(), tooltip, accessor, pokemonEntity, pokemon);
+                addTooltip(type.getLeft(), tooltip, accessor, pokemonEntity, pokemon, tooltips);
             }
-        }
-        if (!accessor.getPlayer().isCrouching() && tooltips.stream().anyMatch(x -> x.getRight() == ShowType.SNEAK)) {
-            tooltip.add(Component.literal("<sneak for additional info>").withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 
@@ -134,7 +133,7 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         return tooltips.stream().anyMatch(x -> x.getLeft() == type && x.getRight() != ShowType.HIDE);
     }
 
-    private void addTooltip(TooltipType tooltipType, ITooltip tooltip, EntityAccessor accessor, PokemonEntity pokemonEntity, Pokemon pokemon) {
+    private void addTooltip(TooltipType tooltipType, ITooltip tooltip, EntityAccessor accessor, PokemonEntity pokemonEntity, Pokemon pokemon, List<Pair<TooltipType, ShowType>> tooltips) {
         var data = accessor.getServerData();
         switch (tooltipType) {
             case TITLE_SPECIES -> {
@@ -267,6 +266,17 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
                         tooltip.add(Component.literal(line));
                     }
                 }
+            }
+            case SNEAK_HINT -> {
+                if (!accessor.getPlayer().isCrouching() && tooltips.stream().anyMatch(x -> x.getRight() == ShowType.SNEAK)) {
+                    tooltip.add(Component.literal("<sneak for additional info>").withStyle(ChatFormatting.DARK_GRAY));
+                }
+            }
+            case BATTLE_HINT -> {
+                var component = Component.literal("<press ");
+                Component sendOutBinding = CurrentKeyAccessorKt.boundKey(PartySendBinding.INSTANCE).getDisplayName();
+                component.append(sendOutBinding).append(" to battle>");
+                tooltip.add(component.withStyle(ChatFormatting.DARK_GRAY));
             }
         }
     }

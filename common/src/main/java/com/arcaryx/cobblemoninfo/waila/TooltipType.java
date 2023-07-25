@@ -25,6 +25,8 @@ public enum TooltipType {
     IVS,
     EVS,
     DEX_ENTRY,
+    SNEAK_HINT,
+    BATTLE_HINT,
     HEALER_ENERGY,
     APRICORN_GROWTH;
 
@@ -48,6 +50,7 @@ public enum TooltipType {
             Pair.of(TooltipType.HEALTH, ShowType.SHOW),
             Pair.of(TooltipType.TYPES, ShowType.SHOW),
             Pair.of(TooltipType.REWARD_EVS, ShowType.SHOW),
+            Pair.of(TooltipType.SNEAK_HINT, ShowType.NO_SNEAK),
             Pair.of(TooltipType.TRAINER, ShowType.SNEAK),
             Pair.of(TooltipType.FRIENDSHIP, ShowType.SNEAK),
             Pair.of(TooltipType.NATURE, ShowType.SNEAK),
