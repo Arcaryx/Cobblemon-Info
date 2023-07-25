@@ -12,6 +12,7 @@ public enum TooltipType {
     TITLE_NICKNAME_SPECIES,
     TITLE_GENDER_NICKNAME_SPECIES,
     SPECIES,
+    LEVEL,
     GENDER,
     HEALTH,
     TRAINER,

@@ -12,11 +12,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.tuple.Pair;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -160,14 +158,7 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
             }
             case TITLE_NICKNAME_SPECIES -> {
                 var component = Component.empty();
-                if (pokemon.getNickname() != null && !pokemon.getNickname().getString().isEmpty()) {
-                    component.append("\"").append(pokemon.getNickname()).append("\" (").append(pokemon.getSpecies().getTranslatedName()).append(")");
-                } else {
-                    component.append(pokemon.getSpecies().getTranslatedName()).withStyle(ChatFormatting.WHITE);
-                    if (pokemon.getSpecies().getStandardForm() != pokemon.getForm()) {
-                        component.append(Component.literal(String.format(" (%s)", pokemon.getForm().getName())).withStyle(ChatFormatting.WHITE));
-                    }
-                }
+                titleNicknameSpeciesComponent(pokemon, component);
                 component.withStyle(ChatFormatting.WHITE);
                 tooltip.add(component);
             }
@@ -178,14 +169,7 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
                     var prefix = gender == Gender.MALE ? ChatFormatting.BLUE + "\u2642 " : ChatFormatting.LIGHT_PURPLE + "\u2640 ";
                     component = component.append(prefix);
                 }
-                if (pokemon.getNickname() != null && !pokemon.getNickname().getString().isEmpty()) {
-                    component.append("\"").append(pokemon.getNickname()).append("\" (").append(pokemon.getSpecies().getTranslatedName()).append(")");
-                } else {
-                    component.append(pokemon.getSpecies().getTranslatedName()).withStyle(ChatFormatting.WHITE);
-                    if (pokemon.getSpecies().getStandardForm() != pokemon.getForm()) {
-                        component.append(Component.literal(String.format(" (%s)", pokemon.getForm().getName())).withStyle(ChatFormatting.WHITE));
-                    }
-                }
+                titleNicknameSpeciesComponent(pokemon, component);
                 tooltip.add(component);
             }
             case SPECIES -> {
@@ -193,6 +177,10 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
                 if (pokemon.getSpecies().getStandardForm() != pokemon.getForm()) {
                     component.append(Component.literal(String.format(" (%s)", pokemon.getForm().getName())));
                 }
+                tooltip.add(component);
+            }
+            case LEVEL -> {
+                var component = Component.literal("Level: " + pokemon.getLevel());
                 tooltip.add(component);
             }
             case GENDER -> {
@@ -279,6 +267,17 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
                         tooltip.add(Component.literal(line));
                     }
                 }
+            }
+        }
+    }
+
+    private void titleNicknameSpeciesComponent(Pokemon pokemon, MutableComponent component) {
+        if (pokemon.getNickname() != null && !pokemon.getNickname().getString().isEmpty()) {
+            component.append("\"").append(pokemon.getNickname()).append("\" (").append(pokemon.getSpecies().getTranslatedName()).append(")");
+        } else {
+            component.append(pokemon.getSpecies().getTranslatedName()).withStyle(ChatFormatting.WHITE);
+            if (pokemon.getSpecies().getStandardForm() != pokemon.getForm()) {
+                component.append(Component.literal(String.format(" (%s)", pokemon.getForm().getName())).withStyle(ChatFormatting.WHITE));
             }
         }
     }
