@@ -17,11 +17,6 @@ public enum ApricornProvider implements IBlockComponentProvider {
     INSTANCE;
 
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-        var showApricornProgress = CobblemonInfo.CONFIG.showApricornProgress();
-        if (showApricornProgress != ShowType.SHOW && (showApricornProgress == ShowType.SNEAK && !accessor.getPlayer().isCrouching())) {
-            return;
-        }
-
         BlockState state = accessor.getBlockState();
         Block block = state.getBlock();
 

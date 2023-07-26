@@ -7,14 +7,15 @@ import com.arcaryx.cobblemoninfo.util.TextUtils;
 import com.arcaryx.cobblemoninfo.waila.TooltipType;
 import com.cobblemon.mod.common.client.keybind.CurrentKeyAccessorKt;
 import com.cobblemon.mod.common.client.keybind.keybinds.PartySendBinding;
+import com.cobblemon.mod.common.client.settings.ServerSettings;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Gender;
 import com.cobblemon.mod.common.pokemon.Pokemon;
+import com.cobblemon.mod.common.util.LocalizationUtilsKt;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.lang3.tuple.Pair;
@@ -45,10 +46,6 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
 
     @Override
     public void appendServerData(CompoundTag data, EntityAccessor entityAccessor) {
-        if (!CobblemonInfo.CONFIG.modifyPokemonTooltip()) {
-            return;
-        }
-
         if (!(entityAccessor.getEntity() instanceof PokemonEntity pokemonEntity)) {
             return;
         }
@@ -56,9 +53,7 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
         var pokemon = pokemonEntity.getPokemon();
         var tooltips = CobblemonInfo.CONFIG.getPokemonTooltips();
 
-        if (configContains(tooltips, TooltipType.TITLE_GENDER_SPECIES) ||
-                configContains(tooltips, TooltipType.TITLE_GENDER_NICKNAME_SPECIES) ||
-                configContains(tooltips, TooltipType.GENDER)) {
+        if (configContains(tooltips, TooltipType.TITLE_GENDER) || configContains(tooltips, TooltipType.GENDER)) {
             data.putString(TAG_GENDER, pokemon.getGender().getShowdownName());
         }
 
@@ -101,10 +96,6 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
 
     @Override
     public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-        if (!CobblemonInfo.CONFIG.modifyPokemonTooltip()) {
-            return;
-        }
-
         if (!(accessor.getEntity() instanceof PokemonEntity pokemonEntity)) {
             return;
         }
@@ -138,40 +129,26 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
     private void addTooltip(TooltipType tooltipType, ITooltip tooltip, EntityAccessor accessor, PokemonEntity pokemonEntity, Pokemon pokemon, List<Pair<TooltipType, ShowType>> tooltips) {
         var data = accessor.getServerData();
         switch (tooltipType) {
-            case TITLE_SPECIES -> {
-                var component = pokemon.getSpecies().getTranslatedName().withStyle(ChatFormatting.WHITE);
-                if (pokemon.getSpecies().getStandardForm() != pokemon.getForm()) {
-                    component.append(Component.literal(String.format(" (%s)", pokemon.getForm().getName())).withStyle(ChatFormatting.WHITE));
+            case TITLE -> {
+                var component = pokemonEntity.getName().copy();
+                if (ServerSettings.INSTANCE.getDisplayEntityLevelLabel() && pokemonEntity.labelLevel() > 0) {
+                    var levelLabel = LocalizationUtilsKt.lang("label.lv", pokemonEntity.labelLevel());
+                    component.append(" ").append(levelLabel);
                 }
-                tooltip.add(component);
+                tooltip.add(component.withStyle(ChatFormatting.WHITE));
             }
-            case TITLE_GENDER_SPECIES -> {
+            case TITLE_GENDER -> {
                 var gender = data.contains(TAG_GENDER) ? PokemonUtils.getGenderFromShowdownName(data.getString(TAG_GENDER)) : Gender.GENDERLESS;
-                var component = pokemon.getSpecies().getTranslatedName().withStyle(ChatFormatting.WHITE);
+                var component = pokemonEntity.getName().copy();
                 if (gender != Gender.GENDERLESS) {
                     var prefix = gender == Gender.MALE ? ChatFormatting.BLUE + "\u2642 " : ChatFormatting.LIGHT_PURPLE + "\u2640 ";
                     component = Component.literal(prefix).append(component);
                 }
-                if (pokemon.getSpecies().getStandardForm() != pokemon.getForm()) {
-                    component.append(Component.literal(String.format(" (%s)", pokemon.getForm().getName())).withStyle(ChatFormatting.WHITE));
+                if (ServerSettings.INSTANCE.getDisplayEntityLevelLabel() && pokemonEntity.labelLevel() > 0) {
+                    var levelLabel = LocalizationUtilsKt.lang("label.lv", pokemonEntity.labelLevel());
+                    component.append(" ").append(levelLabel);
                 }
-                tooltip.add(component);
-            }
-            case TITLE_NICKNAME_SPECIES -> {
-                var component = Component.empty();
-                titleNicknameSpeciesComponent(pokemon, component);
-                component.withStyle(ChatFormatting.WHITE);
-                tooltip.add(component);
-            }
-            case TITLE_GENDER_NICKNAME_SPECIES -> {
-                var gender = data.contains(TAG_GENDER) ? PokemonUtils.getGenderFromShowdownName(data.getString(TAG_GENDER)) : Gender.GENDERLESS;
-                var component = Component.empty();
-                if (gender != Gender.GENDERLESS) {
-                    var prefix = gender == Gender.MALE ? ChatFormatting.BLUE + "\u2642 " : ChatFormatting.LIGHT_PURPLE + "\u2640 ";
-                    component = component.append(prefix);
-                }
-                titleNicknameSpeciesComponent(pokemon, component);
-                tooltip.add(component);
+                tooltip.add(component.withStyle(ChatFormatting.WHITE));
             }
             case SPECIES -> {
                 var component = Component.literal("Species: ").append(pokemon.getDisplayName());
@@ -279,17 +256,6 @@ public enum PokemonProvider implements IEntityComponentProvider, IServerDataProv
                     component.append(sendOutBinding).append(" to battle>");
                     tooltip.add(component.withStyle(ChatFormatting.DARK_GRAY));
                 }
-            }
-        }
-    }
-
-    private void titleNicknameSpeciesComponent(Pokemon pokemon, MutableComponent component) {
-        if (pokemon.getNickname() != null && !pokemon.getNickname().getString().isEmpty()) {
-            component.append("\"").append(pokemon.getNickname()).append("\" (").append(pokemon.getSpecies().getTranslatedName()).append(")");
-        } else {
-            component.append(pokemon.getSpecies().getTranslatedName()).withStyle(ChatFormatting.WHITE);
-            if (pokemon.getSpecies().getStandardForm() != pokemon.getForm()) {
-                component.append(Component.literal(String.format(" (%s)", pokemon.getForm().getName())).withStyle(ChatFormatting.WHITE));
             }
         }
     }

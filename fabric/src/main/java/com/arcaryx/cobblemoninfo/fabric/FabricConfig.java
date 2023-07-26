@@ -7,6 +7,7 @@ import com.arcaryx.cobblemoninfo.waila.TooltipType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.FileReader;
@@ -25,15 +26,13 @@ public class FabricConfig implements IConfig {
             .create();
     private static final Path CONFIG_PATH = Paths.get("config", CobblemonInfo.MOD_ID + ".json");
 
-    private boolean modifyPokemonTooltip = true;
-    private boolean hidePokemonLabel = false;
+    private boolean hidePokemonLabel;
     private List<Pair<TooltipType, ShowType>> pokemonTooltips = TooltipType.pokemonDefaults;
-    private ShowType showHealerEnergy = ShowType.SHOW;
-    private ShowType showApricornProgress = ShowType.SHOW;
 
     public static FabricConfig load() {
         var config = new FabricConfig();
         if (!Files.exists(CONFIG_PATH)) {
+            config.hidePokemonLabel = FabricLoader.getInstance().isModLoaded("jade");
             config.saveConfig();
         } else {
             config.loadConfig();
@@ -44,11 +43,8 @@ public class FabricConfig implements IConfig {
     private void loadConfig() {
         try (FileReader reader = new FileReader(CONFIG_PATH.toFile())) {
             FabricConfig config = GSON.fromJson(reader, FabricConfig.class);
-            this.modifyPokemonTooltip = config.modifyPokemonTooltip;
             this.hidePokemonLabel = config.hidePokemonLabel;
             this.pokemonTooltips = config.pokemonTooltips;
-            this.showHealerEnergy = config.showHealerEnergy;
-            this.showApricornProgress = config.showApricornProgress;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,11 +59,6 @@ public class FabricConfig implements IConfig {
     }
 
     @Override
-    public boolean modifyPokemonTooltip() {
-        return modifyPokemonTooltip;
-    }
-
-    @Override
     public boolean hidePokemonLabel() {
         return hidePokemonLabel;
     }
@@ -75,15 +66,5 @@ public class FabricConfig implements IConfig {
     @Override
     public List<Pair<TooltipType, ShowType>> getPokemonTooltips() {
         return Collections.unmodifiableList(pokemonTooltips);
-    }
-
-    @Override
-    public ShowType showHealerEnergy() {
-        return showHealerEnergy;
-    }
-
-    @Override
-    public ShowType showApricornProgress() {
-        return showApricornProgress;
     }
 }

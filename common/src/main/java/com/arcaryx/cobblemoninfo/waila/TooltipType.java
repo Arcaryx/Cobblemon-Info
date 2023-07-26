@@ -7,10 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum TooltipType {
-    TITLE_SPECIES,
-    TITLE_GENDER_SPECIES,
-    TITLE_NICKNAME_SPECIES,
-    TITLE_GENDER_NICKNAME_SPECIES,
+    TITLE,
+    TITLE_GENDER,
     SPECIES,
     LEVEL,
     GENDER,
@@ -26,9 +24,7 @@ public enum TooltipType {
     EVS,
     DEX_ENTRY,
     SNEAK_HINT,
-    BATTLE_HINT,
-    HEALER_ENERGY,
-    APRICORN_GROWTH;
+    BATTLE_HINT;
 
 
     public static boolean check(Object entry) {
@@ -46,8 +42,9 @@ public enum TooltipType {
     }
 
     public static final List<Pair<TooltipType, ShowType>> pokemonDefaults = Arrays.asList(
-            Pair.of(TooltipType.TITLE_GENDER_NICKNAME_SPECIES, ShowType.SHOW),
+            Pair.of(TooltipType.TITLE_GENDER, ShowType.SHOW),
             Pair.of(TooltipType.HEALTH, ShowType.SHOW),
+            Pair.of(TooltipType.TRAINER, ShowType.SHOW),
             Pair.of(TooltipType.TYPES, ShowType.SHOW),
             Pair.of(TooltipType.REWARD_EVS, ShowType.SHOW),
             Pair.of(TooltipType.SNEAK_HINT, ShowType.NO_SNEAK),
@@ -57,6 +54,7 @@ public enum TooltipType {
             Pair.of(TooltipType.ABILITY, ShowType.SNEAK),
             Pair.of(TooltipType.IVS, ShowType.SNEAK),
             Pair.of(TooltipType.EVS, ShowType.SNEAK),
-            Pair.of(TooltipType.DEX_ENTRY, ShowType.SNEAK)
+            Pair.of(TooltipType.DEX_ENTRY, ShowType.SNEAK),
+            Pair.of(TooltipType.BATTLE_HINT, ShowType.SNEAK)
     );
 }

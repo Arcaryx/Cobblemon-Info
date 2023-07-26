@@ -18,11 +18,6 @@ public enum HealerProvider implements IBlockComponentProvider {
 
     @Override
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-        var showHealer = CobblemonInfo.CONFIG.showHealerEnergy();
-        if (showHealer != ShowType.SHOW && (showHealer == ShowType.SNEAK && !accessor.getPlayer().isCrouching())) {
-            return;
-        }
-
         if (!(accessor.getBlockEntity() instanceof HealingMachineBlockEntity healer)) {
             return;
         }
