@@ -18,6 +18,9 @@
     ],
     "jade": [
       "${mod_base_package}.waila.jade.CobblemonJadePlugin"
+    ],
+    "jei_mod_plugin": [
+      "${mod_base_package}.jei.CobblemonJeiPlugin"
     ]
   },
   "mixins": [

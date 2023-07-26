@@ -28,6 +28,7 @@ public abstract class MixinPlayerList {
     @Inject(method = "reloadResources",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastAll(Lnet/minecraft/network/protocol/Packet;)V"), require = 1)
     private void mixinReloadResources(CallbackInfo ci) {
+        // TODO: Verify this is even used, since JEI might not refresh categories on reload
         var lootDrops = computeLootDrops();
         for (var player : this.players) {
             CobblemonInfo.NETWORK.sendToPlayer(player, new SyncDropsMessage(lootDrops));
@@ -35,7 +36,7 @@ public abstract class MixinPlayerList {
     }
 
     @Inject(method = "placeNewPlayer",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;sendPlayerPermissionLevel(Lnet/minecraft/server/level/ServerPlayer;)V"), require = 1)
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;send(Lnet/minecraft/network/protocol/Packet;)V", ordinal = 6), require = 1)
     private void mixinPlaceNewPlayer(Connection netManager, ServerPlayer player, CallbackInfo ci) {
         // TODO: This only needs to be computed once
         var lootDrops = computeLootDrops();
