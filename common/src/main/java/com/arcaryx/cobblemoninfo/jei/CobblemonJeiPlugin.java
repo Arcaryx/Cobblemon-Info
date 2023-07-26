@@ -21,7 +21,7 @@ import java.util.Set;
 
 @JeiPlugin
 public class CobblemonJeiPlugin implements IModPlugin {
-    public static final ResourceLocation DROPS = new ResourceLocation(CobblemonInfo.MOD_ID, "drops");
+    public static final ResourceLocation DROPS = new ResourceLocation(CobblemonInfo.MOD_ID, "cobblemon_drops");
     public static final RecipeType<DropsWrapper> DROPS_TYPE = new RecipeType<>(DROPS, DropsWrapper.class);
 
     private static IJeiHelpers jeiHelpers;

@@ -16,7 +16,7 @@ public class DropsJeiCategory extends BlankJeiCategory<DropsWrapper> {
     public static final ResourceLocation GUI_LOCATION = new ResourceLocation(CobblemonInfo.MOD_ID, "textures/gui/drops.png");
 
     public DropsJeiCategory() {
-        super("drops",
+        super("cobblemon_drops",
                 CobblemonJeiPlugin.getJeiHelpers().getGuiHelper().createDrawableItemStack(CobblemonItems.POKE_BALL.getDefaultInstance()),
                 CobblemonJeiPlugin.getJeiHelpers().getGuiHelper().createDrawable(GUI_LOCATION, 0, 0, 140, 95));
     }
