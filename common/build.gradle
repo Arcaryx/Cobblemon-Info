@@ -7,7 +7,6 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modImplementation "com.cobblemon:mod:${cobblemon_file}"
     modImplementation "curse.maven:jade-common-324717:${jade_forge_file}"
-    modImplementation "curse.maven:architectury-common-419699:${architectury_forge_file}"
     modImplementation "curse.maven:kotlin-common-351264:${kotlin_forge_file}"
     modImplementation "curse.maven:jei-common-238222:${jei_forge_file}"
 }

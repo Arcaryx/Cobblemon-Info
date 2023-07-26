@@ -27,7 +27,6 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
-    modImplementation "curse.maven:architectury-fabric-419699:${architectury_fabric_file}"
     modImplementation "com.cobblemon:fabric:${cobblemon_file}"
     modImplementation "curse.maven:jade-fabric-324717:${jade_fabric_file}"
     modImplementation "curse.maven:jei-fabric-238222:${jei_fabric_file}"
