@@ -22,7 +22,7 @@ public class CobblemonInfoForge {
     public CobblemonInfoForge() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, commonSpec);
         CobblemonInfo.CONFIG = config;
-
+        CobblemonInfo.NETWORK = new ForgeNetworkHandler();
         CobblemonInfo.init();
     }
 }

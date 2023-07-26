@@ -26,7 +26,7 @@ public class FabricConfig implements IConfig {
     private static final Path CONFIG_PATH = Paths.get("config", CobblemonInfo.MOD_ID + ".json");
 
     private boolean modifyPokemonTooltip = true;
-    private boolean hidePokemonLabel = true;
+    private boolean hidePokemonLabel = false;
     private List<Pair<TooltipType, ShowType>> pokemonTooltips = TooltipType.pokemonDefaults;
     private ShowType showHealerEnergy = ShowType.SHOW;
     private ShowType showApricornProgress = ShowType.SHOW;
